@@ -1,0 +1,34 @@
+#!/bin/bash -i
+#$ -S /bin/bash
+#$ -cwd
+#$ -N isg
+#$ -j y
+
+set -x  # echo commands
+
+project_dir="/home/wittmann/isg"
+
+# For faster disk access copy files to /scratch first.
+scratch="/scratch/$USER/$$"
+mkdir -p $scratch
+cp -r $project_dir/* $scratch
+
+# Compile
+cd $scratch
+./setup.sh
+make
+
+# Generate samples
+seeds=$(python dilute.py $N $Z $sigma -n $num_cores)
+
+# Run
+# Don't read or write to /home from here
+sigma_="$(echo $sigma | tr . _)"
+tempset="$scratch/data/tempsets/temps_s${sigma_}.txt"
+mpirun ./isg_mpi -d $dec_max -t $tempset $seeds
+
+# Copy output to home directory, clean up.
+cp out*.txt $output_dir
+cp *.h $output_dir
+rm -rf $scratch
+

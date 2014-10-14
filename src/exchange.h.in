@@ -1,0 +1,34 @@
+#include "sample.h"
+#include "rng.h"
+
+#ifndef EXCHANGE_H
+#define EXCHANGE_H
+
+#define NUM_REPLICAS        @NUM_REPLICAS@
+#define REPLICA_EXCHANGE    @REPLICA_EXCHANGE@
+
+typedef struct
+{
+    const sample_t *sample;
+    const double *beta;
+    int b2r[NUM_REPLICAS];  /* beta index -> replica index */
+    int r2b[NUM_REPLICAS];  /* replica index -> beta index */
+    int swapped[NUM_REPLICAS];
+    int S[NUM_REPLICAS][N];
+    double h2[NUM_REPLICAS][N];
+    double u[NUM_REPLICAS];
+
+} exchange_t;
+
+void exchange_init(exchange_t *x, sample_t *sample, const double beta[NUM_REPLICAS]);
+
+void exchange_update(exchange_t *x, rng_t *rng);
+
+void update_exchange(const double beta[NUM_REPLICAS],
+                     const double u[NUM_REPLICAS],
+                     int b2r[NUM_REPLICAS],
+                     int r2b[NUM_REPLICAS],
+                     int swapped[NUM_REPLICAS],
+                     rng_t *rng);
+
+#endif

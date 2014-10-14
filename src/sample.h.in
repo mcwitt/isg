@@ -1,0 +1,42 @@
+#ifndef SAMPLE_H
+#define SAMPLE_H
+
+#include <stdio.h>
+
+#define N           @N@
+#define Z_MAX       @Z_MAX@
+#define NZ_MAX      @NZ_MAX@
+#define MAX_BONDS   @MAX_BONDS@
+
+#define IS_SITE_INDEX(i) (i >= 0 && i < N)
+
+typedef struct
+{
+    int n[NZ_MAX];
+    double J4[NZ_MAX];
+    double h2m[N];
+    double um;
+    int z[N];
+    int num_bonds;
+    int bond_i[MAX_BONDS];
+    int bond_j[MAX_BONDS];
+    double bond_v[MAX_BONDS];
+} sample_t;
+
+
+void sample_init(sample_t *s);
+
+void sample_add_bond(sample_t *s, int i, int j, double v);
+
+int sample_read(sample_t *s, FILE *fp, int *num_bonds);
+
+void reset_bonds(int n[NZ_MAX], int z[N], double h2m[N], double *um);
+
+void add_bond(int i, int j, double v,
+              int n[NZ_MAX],
+              double J4[NZ_MAX],
+              int z[N],
+              double h2m[N],
+              double *um);
+
+#endif
