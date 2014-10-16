@@ -20,9 +20,16 @@ typedef struct
 
 } exchange_t;
 
-void exchange_init(exchange_t *x, sample_t *sample, const double beta[NUM_REPLICAS]);
+void exchange_init(exchange_t *x,
+                   const sample_t *sample,
+                   const double beta[NUM_REPLICAS]);
 
 void exchange_update(exchange_t *x, rng_t *rng);
+
+void exchange_get_replica(const exchange_t *x,
+                          int ib,
+                          const int **S,
+                          double *u);
 
 void update_exchange(const double beta[NUM_REPLICAS],
                      const double u[NUM_REPLICAS],

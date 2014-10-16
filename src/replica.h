@@ -4,14 +4,14 @@
 
 typedef struct
 {
-    sample_t *sample;
+    const sample_t *sample;
     int S[N];
     double h2[N];
     double u;
 
 } replica_t;
 
-void replica_init(replica_t *r, sample_t *s);
+void replica_init(replica_t *r, const sample_t *s);
 
 void replica_update(replica_t *r, double beta, rng_t *rng);
 

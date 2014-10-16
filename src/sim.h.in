@@ -3,7 +3,6 @@
 #include <stdio.h>
 
 #define Z @Z@
-#define NUM_BONDS @NUM_BONDS@
 
 #define DEC_WARMUP 4
 #define DEC_PER_MEAS @DEC_PER_MEAS@
@@ -16,8 +15,8 @@
 #endif
 
 void run_sim(state_t *s,
-             params_t *p,
-             double T[NUM_REPLICAS],
+             const params_t *p,
+             const double T[NUM_REPLICAS],
              unsigned int seed,
              int dec_max,
              FILE *fp);

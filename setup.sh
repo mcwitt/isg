@@ -14,7 +14,6 @@ addp srcdir $srcdir
 addp N 128
 addp Z 6
 addp Z_MAX 24
-addp MAX_BONDS 6144
 
 addp NUM_REPLICAS 50
 addp REPLICA_EXCHANGE 1
@@ -23,8 +22,8 @@ addp DEC_PER_MEAS 3
 addp RNG "RNG_MT19937"
 
 # compute derived constants
+addp MAX_BONDS $((N*Z/2))
 addp NZ_MAX $((N*Z_MAX))
-addp NUM_BONDS $((N*Z/2))
 addp UPDATES_PER_MEAS $((2**DEC_PER_MEAS))
 
 for f in $srcdir/*.in; do

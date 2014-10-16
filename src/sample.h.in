@@ -8,7 +8,7 @@
 #define NZ_MAX      @NZ_MAX@
 #define MAX_BONDS   @MAX_BONDS@
 
-#define IS_SITE_INDEX(i) (i >= 0 && i < N)
+#define IS_SITE_INDEX(i) ((i) >= 0 && (i) < N)
 
 typedef struct
 {

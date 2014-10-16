@@ -3,7 +3,9 @@
 #include <math.h>
 
 
-void exchange_init(exchange_t *x, sample_t *s, const double beta[NUM_REPLICAS])
+void exchange_init(exchange_t *x,
+                   const sample_t *s,
+                   const double beta[NUM_REPLICAS])
 {
     int i;
 
@@ -33,6 +35,17 @@ void exchange_update(exchange_t *x, rng_t *rng)
 #endif
 }
 
+void exchange_get_replica(const exchange_t *x,
+                          int ib,
+                          const int **S,
+                          double *u)
+{
+    int ir = x->b2r[ib];
+
+    *S = x->S[ir];
+    *u = x->u[ir];
+}
+
 void update_exchange(const double beta[NUM_REPLICAS],
                      const double u[NUM_REPLICAS],
                      int b2r[NUM_REPLICAS],
@@ -55,10 +68,10 @@ void update_exchange(const double beta[NUM_REPLICAS],
 
         if (du < 0. || (r = RNG_UNIFORM(rng), r < exp(db*du)))
         {
-#define SET_BETA(ir, ib) { b2r[ib] = ir; r2b[ir] = ib; }
-            SET_BETA(ir1, ib2);     /* move replica 1 to temperature slot 2 */
-            SET_BETA(ir2, ib1);     /* etc. */
-#undef SET_BETA
+#define LINK(ir, ib) { b2r[ib] = ir; r2b[ir] = ib; }
+            LINK(ir1, ib2); /* link replica 1 to temperature 2 */
+            LINK(ir2, ib1); /* etc. */
+#undef LINK
             swapped[ib2] = 1;
         }
         else swapped[ib2] = 0;

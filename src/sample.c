@@ -68,6 +68,7 @@ void add_bond(int i, int j, double v,
 void reset_bonds(int n[NZ_MAX], int z[N], double h2m[N], double *um)
 {
     int i, k;
+
     *um = 0.;
     
     for (i = 0; i < N; i++)

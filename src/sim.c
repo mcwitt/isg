@@ -1,4 +1,5 @@
 #include "sim.h"
+#include "exchange.h"
 #include "macros.h"
 #include <math.h>
 
@@ -52,27 +53,31 @@ double link_overlap(const int bond_i[MAX_BONDS],
     return (double) sum/num_bonds;
 }
 
-void accumulate(state_t *s, double sum[][NUM_MEAS_KINDS])
+void accumulate(const state_t *s, double sum[])
 {
     int ib;
 
     for (ib = 0; ib < NUM_REPLICAS; ib++)
     {
-        int ir = s->x->b2r[ib];
-        int   *S1 = s->x[0].S[ir], *S2 = s->x[1].S[ir];
-        double u1 = s->x[0].u[ir],  u2 = s->x[1].u[ir];
-        double q = spin_overlap(S1, S2);
+        const int *S1, *S2;
+        double q, u1, u2;
+        double *t = &sum[ib * NUM_MEAS_KINDS];
 
-        sum[ib][U] += 0.5*(u1 + u2)/N;
-        sum[ib][Q2] += q*q;
-        sum[ib][Q4] += q*q*q*q;
+        exchange_get_replica(&s->x[0], ib, &S1, &u1);
+        exchange_get_replica(&s->x[1], ib, &S2, &u2);
 
-        sum[ib][QL] += link_overlap(s->sample.bond_i,
-                                    s->sample.bond_j,
-                                    s->sample.num_bonds,
-                                    S1, S2);
+        q = spin_overlap(S1, S2);
 
-        sum[ib][RX] += 0.5*(s->x[0].swapped[ib] + s->x[1].swapped[ib]);
+        t[U] += 0.5*(u1 + u2)/N;
+        t[Q2] += q*q;
+        t[Q4] += q*q*q*q;
+
+        t[QL] += link_overlap(s->sample.bond_i,
+                              s->sample.bond_j,
+                              s->sample.num_bonds,
+                              S1, S2);
+
+        t[RX] += 0.5*(s->x[0].swapped[ib] + s->x[1].swapped[ib]);
     }
 }
 
@@ -89,18 +94,22 @@ void print_header(FILE *fp)
     fprintf(fp, "\n");
 }
 
-void print_averages(FILE *fp, int d, double T[NUM_REPLICAS],
-                    double sum[][NUM_MEAS_KINDS], int num_meas)
+void print_averages(FILE *fp, int d,
+                    const double T[NUM_REPLICAS],
+                    const double sum[],
+                    int num_meas)
 {
     int i, j;
 
     for (i = 0; i < NUM_REPLICAS; i++)
     {
+        const double *t = &sum[i*NUM_MEAS_KINDS];
+
         fprintf(fp, "%*d", COL_WIDTH, d);
         fprintf(fp, "%*g", COL_WIDTH, T[i]);
 
         for (j = 0; j < NUM_MEAS_KINDS; j++)
-            fprintf(fp, "%*g", COL_WIDTH, sum[i][j]/num_meas);
+            fprintf(fp, "%*g", COL_WIDTH, t[j]/num_meas);
 
         fprintf(fp, "\n");
     }
@@ -109,14 +118,14 @@ void print_averages(FILE *fp, int d, double T[NUM_REPLICAS],
 }
 
 void run_sim(state_t *s,
-             params_t *p,
-             double T[NUM_REPLICAS],
+             const params_t *p,
+             const double T[NUM_REPLICAS],
              unsigned int seed,
              int dec_max,
              FILE *fp)
 {
     int d, i, num_meas;
-    double sum[NUM_REPLICAS][NUM_MEAS_KINDS];
+    double sum[NUM_REPLICAS * NUM_MEAS_KINDS];
 
     state_init(s, p, seed);
     state_update(s, pow(2, DEC_WARMUP));
@@ -125,7 +134,7 @@ void run_sim(state_t *s,
     for (d = DEC_WARMUP; d <= dec_max; d++)
     {
         num_meas = pow(2, d - DEC_PER_MEAS);
-        ZERO(&sum[0][0], NUM_REPLICAS * NUM_MEAS_KINDS);
+        ZEROS(sum, NUM_REPLICAS * NUM_MEAS_KINDS);
 
         for (i = 0; i < num_meas; i++)
         {

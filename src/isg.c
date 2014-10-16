@@ -69,13 +69,14 @@ int main(int argc, char *argv[])
             p.beta[i] = 1./T[i];
         else
         {
-            fprintf(stderr,
-                    "%s: error: not enough temperatures in %s\n",
+            fprintf(stderr, "%s: error: not enough temperatures in %s\n",
                     argv[0], filename);
 
             return EXIT_FAILURE;
         }
     }
+
+    fclose(fp);
 
     /* start MPI */
     if ((c = MPI_Init(&argc, &argv)) != MPI_SUCCESS)
@@ -107,20 +108,22 @@ int main(int argc, char *argv[])
     sprintf(buf, SAMPLE_FILENAME_FMT, seed);
     SAFE_OPEN(fp, buf, "r");
 
-    if (sample_read(&s->sample, fp, &num_bonds) != 0 || num_bonds != NUM_BONDS)
+    if (sample_read(&s->sample, fp, &num_bonds) != 0 || num_bonds != MAX_BONDS)
     {
-        fprintf(stderr,
-                "%s: error loading sample from file `%s'\n",
+        fprintf(stderr, "%s: error loading sample from file `%s'\n",
                 argv[0], buf);
 
         exit(EXIT_FAILURE);
     }
+
+    fclose(fp);
 
     /* open output file and run simulation */
     sprintf(buf, OUTPUT_FILENAME_FMT, seed);
     SAFE_OPEN(fp, buf, "w");
     run_sim(s, &p, T, seed, dec_max, fp);
 
+    fclose(fp);
     free(s);
     MPI_Finalize();
     return EXIT_SUCCESS;

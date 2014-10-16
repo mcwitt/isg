@@ -1,7 +1,7 @@
 #include "state.h"
 
 
-void state_init(state_t *s, params_t *params, unsigned int seed)
+void state_init(state_t *s, const params_t *params, unsigned int seed)
 {
     int i;
 
