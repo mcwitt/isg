@@ -17,6 +17,7 @@ function askp {
 askp N 128 "N"
 askp Z 6 "z"
 askp sigma "0.784" "sigma"
+askp dec_warmup 10 "number of warmup decades"
 askp dec_max 16 "number of decades"
 askp REPLICA_EXCHANGE 0 "enable replica exchange"
 askp num_jobs 12 "number of jobs"

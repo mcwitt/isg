@@ -1,4 +1,5 @@
 #include "sample.h"
+#include "replica.h"
 #include "rng.h"
 
 #ifndef EXCHANGE_H
@@ -26,10 +27,7 @@ void exchange_init(exchange_t *x,
 
 void exchange_update(exchange_t *x, rng_t *rng);
 
-void exchange_get_replica(const exchange_t *x,
-                          int ib,
-                          const int **S,
-                          double *u);
+void exchange_get_replica(const exchange_t *x, int ib, replica_t *r);
 
 void update_exchange(const double beta[NUM_REPLICAS],
                      const double u[NUM_REPLICAS],

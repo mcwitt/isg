@@ -1,18 +1,6 @@
 #include "replica.h"
 #include <math.h>
 
-
-void replica_init(replica_t *r, const sample_t *s)
-{
-    r->sample = s;
-    init_replica(s->h2m, s->um, r->S, r->h2, &r->u);
-}
-
-void replica_update(replica_t *r, double beta, rng_t *rng)
-{
-    update_replica(r->sample->n, r->sample->J4, beta, r->S, r->h2, &r->u, rng);
-}
-
 void init_replica(const double h2m[N],
                   double um,
                   int S[N],

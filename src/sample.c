@@ -1,12 +1,5 @@
-/**
- * @file    sample.c
- * @author  Matt Wittmann
- * @brief   Wrapper for dilute.c.
- */
-
 #include <assert.h>
 #include "sample.h"
-
 
 void sample_init(sample_t *s)
 {
@@ -60,9 +53,10 @@ void add_bond(int i, int j, double v,
 
     ADD_NEIGHBOR(i, j);
     ADD_NEIGHBOR(j, i);
-    *um -= v;
 
 #undef ADD_NEIGHBOR
+
+    *um -= v;
 }
 
 void reset_bonds(int n[NZ_MAX], int z[N], double h2m[N], double *um)

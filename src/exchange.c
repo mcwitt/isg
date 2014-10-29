@@ -1,7 +1,5 @@
 #include "exchange.h"
-#include "replica.h"
 #include <math.h>
-
 
 void exchange_init(exchange_t *x,
                    const sample_t *s,
@@ -35,15 +33,14 @@ void exchange_update(exchange_t *x, rng_t *rng)
 #endif
 }
 
-void exchange_get_replica(const exchange_t *x,
-                          int ib,
-                          const int **S,
-                          double *u)
+void exchange_get_replica(const exchange_t *x, int ib, replica_t *r)
 {
     int ir = x->b2r[ib];
 
-    *S = x->S[ir];
-    *u = x->u[ir];
+    r->sample = x->sample;
+    r->S  = x->S[ir];
+    r->h2 = x->h2[ir];
+    r->u  = x->u[ir];
 }
 
 void update_exchange(const double beta[NUM_REPLICAS],

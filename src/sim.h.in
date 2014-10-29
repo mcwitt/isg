@@ -2,21 +2,28 @@
 #include "params.h"
 #include <stdio.h>
 
-#define Z @Z@
+#include "mod_meas.h"
+#include "mod_hist.h"
+#include "mod_modes.h"
+#include "mod_spinstate.h"
 
-#define DEC_WARMUP 4
 #define DEC_PER_MEAS @DEC_PER_MEAS@
 #define UPDATES_PER_MEAS @UPDATES_PER_MEAS@
 
-#define COL_WIDTH 14
+#define MODULES \
+    X(meas) \
+    X(hist) \
+    X(modes) \
+    X(spinstate)
 
-#if (DEC_PER_MEAS > DEC_WARMUP)
-#error Must have DEC_PER_MEAS <= DEC_WARMUP
-#endif
+#define X(_) FILE *_;
+typedef struct { MODULES } output_files_t;
+#undef X
 
 void run_sim(state_t *s,
              const params_t *p,
-             const double T[NUM_REPLICAS],
              unsigned int seed,
+             int dec_warmup,
              int dec_max,
-             FILE *fp);
+             const output_files_t *of);
+

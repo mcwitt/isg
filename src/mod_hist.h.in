@@ -1,0 +1,19 @@
+#include "module.h"
+#include "exchange.h"
+
+#define LOG_N @LOG_N@
+#define LOG_MIN_BLOCK_SIZE @LOG_MIN_BLOCK_SIZE@
+#define NUM_HIST_BINS @NUM_HIST_BINS@
+
+#if (LOG_MIN_BLOCK_SIZE > LOG_N)
+#error require LOG_MIN_BLOCK_SIZE <= LOG_N
+#endif
+
+typedef struct
+{
+    int f[NUM_REPLICAS][NUM_HIST_BINS];
+    FILE *fp;
+} mod_hist_t;
+
+MODULE_INTERFACE(hist);
+

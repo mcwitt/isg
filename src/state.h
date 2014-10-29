@@ -1,5 +1,3 @@
-/* struct containing minimum information needed for checkpointing */
-
 #ifndef STATE_H
 #define STATE_H
 
@@ -9,12 +7,11 @@
 #include "rng.h"
 #include "sample.h"
 
-
-#define OVERLAP_DEG 2   /* 2-point correlations */
+/* struct containing minimum information needed for checkpointing */
 
 typedef struct
 {
-    exchange_t x[OVERLAP_DEG];
+    exchange_t x1, x2;
     sample_t sample;
     rng_t *rng;
     const params_t *params;

@@ -1,19 +1,17 @@
-#include "sample.h"
-#include "rng.h"
+#ifndef REPLICA_H
+#define REPLICA_H
 
+#include "rng.h"
+#include "sample.h"
 
 typedef struct
 {
     const sample_t *sample;
-    int S[N];
-    double h2[N];
+    const int *S;
+    const double *h2;
     double u;
 
 } replica_t;
-
-void replica_init(replica_t *r, const sample_t *s);
-
-void replica_update(replica_t *r, double beta, rng_t *rng);
 
 void init_replica(const double h2m[N],
                   double um,
@@ -28,3 +26,5 @@ void update_replica(const int n[NZ_MAX],
                     double h2[N],
                     double *u,
                     rng_t *rng);
+
+#endif

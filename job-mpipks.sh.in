@@ -25,10 +25,13 @@ seeds=$(python dilute.py $N $Z $sigma -n $num_cores)
 # Don't read or write to /home from here
 sigma_="$(echo $sigma | tr . _)"
 tempset="$scratch/data/tempsets/temps_s${sigma_}.txt"
-mpirun ./isg -d $dec_max -t $tempset $seeds
+mpirun ./isg -w $dec_warmup -d $dec_max -t $tempset $seeds
+
+# Compress data files
+bzip2 -9 *.txt
 
 # Copy output to home directory, clean up.
-cp out*.txt $output_dir
+cp *.bz2 $output_dir
 cp *.h $output_dir
 rm -rf $scratch
 
