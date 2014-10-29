@@ -72,7 +72,7 @@ if __name__=='__main__':
     if args.n is None:
         write_sample(random_bonds(args.N, args.z, args.sigma), sys.stdout)
     else:
-        fmt = args.fmt if args.fmt else 'sample_{}.txt'
+        fmt = args.fmt if args.fmt else 'samp_{}.txt'
 
         for i in range(args.n):
             seed = np.random.random_integers(0, 2**24)

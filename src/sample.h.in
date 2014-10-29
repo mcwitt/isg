@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #define N           @N@
+#define LOG_N       @LOG_N@
 #define Z_MAX       @Z_MAX@
 #define NZ_MAX      @NZ_MAX@
 #define MAX_BONDS   @MAX_BONDS@

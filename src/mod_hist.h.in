@@ -1,0 +1,15 @@
+#include "exchange.h"
+#include "sample.h"
+#include <stdint.h>
+
+#define LOG_MIN_BLOCK_SIZE @LOG_MIN_BLOCK_SIZE@
+#define NUM_HIST_BINS @NUM_HIST_BINS@
+
+#if (LOG_MIN_BLOCK_SIZE > LOG_N)
+#error require LOG_MIN_BLOCK_SIZE <= LOG_N
+#endif
+
+typedef uint64_t UINT;
+
+typedef struct { UINT f[NUM_REPLICAS][NUM_HIST_BINS]; } mod_hist_t;
+

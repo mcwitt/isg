@@ -2,11 +2,14 @@ srcdir = @srcdir@
 VPATH = $(srcdir)
 
 CC = mpicc
-CFLAGS = -I. -I$(srcdir) -I/usr/include/gsl -Wall -O3 -fopenmp
+CFLAGS = -I. -I$(srcdir) -I/usr/include/gsl -Wall -O3
 
 LDLIBS = -lm -lgsl -lgslcblas
 
-isg: sim.o state.o exchange.o replica.o sample.o
+MODULES = mod_meas.o mod_hist.o mod_corr.o mod_modes.o mod_spinstate.o
+
+isg: output.o state.o exchange.o replica.o sample.o $(MODULES)
+
 
 clean:
 	$(RM) *.o

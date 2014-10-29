@@ -1,9 +1,3 @@
-/**
- * @file    rng.h
- * @author  Matt Wittmann
- * @brief   Wrappers for some random number generators.
- */
-
 #ifndef RNG_H
 #define RNG_H
 

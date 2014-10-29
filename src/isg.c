@@ -1,14 +1,16 @@
-#include "sim.h"
+#include "isg.h"
+#include "modules.h"
 #include <ctype.h>
+#include <math.h>
 #include <mpi.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 
-#define DEC_MAX 10
+#define DEC_MAX 12
+#define DEC_WARMUP 7
 #define TEMP_FILE "temps.txt"
-#define SAMPLE_FILENAME_FMT "sample_%06x.txt"
-#define OUTPUT_FILENAME_FMT "out_%06x.txt"
+#define SUFFIX "_%06x.txt"
 
 #define SAFE_OPEN(fp, filename, mode) \
     if ((fp = fopen(filename, mode)) == NULL) {\
@@ -16,27 +18,71 @@
         exit(EXIT_FAILURE);\
     }
 
+#define OPEN_FILE(fmt, seed, buf, fp, mode) {\
+    sprintf(buf, fmt, seed); \
+    SAFE_OPEN(fp, buf, mode); \
+}
+
+void run_sim(state_t *s,
+             const params_t *p,
+             unsigned int seed,
+             int dec_warmup,
+             int dec_max,
+             const output_files_t *of)
+{
+    int d, i, num_updates;
+    modules_t mods;
+
+    state_init(s, p, seed);
+    state_update(s, pow(2, dec_warmup));
+    MODULES(MODULE_INIT, mods, of);
+
+    for (d = dec_warmup + 1; d <= dec_max; d++)
+    {
+        index_t idx = {d};
+        num_updates = pow(2, d - LOG_UPDATES_PER_MEAS);
+        MODULES(MODULE_RESET, mods);
+
+        for (i = 0; i < num_updates; i++)
+        {
+            state_update(s, UPDATES_PER_MEAS);
+            MODULES(MODULE_UPDATE, mods, s);
+        }
+
+        MODULES(MODULE_OUTPUT, mods, s, &idx, num_updates, of);
+    }
+
+    state_free(s);
+}
+
 int main(int argc, char *argv[])
 {
-    FILE *fp;
-    char buf[50], *filename = TEMP_FILE;
-    double T[NUM_REPLICAS];
-    int i, c, num_seeds, dec_max = DEC_MAX;
-    int num_bonds, num_tasks, rank;
+    FILE *fp_in;
+    char buf[50], *fname_temps = TEMP_FILE;
+
+    int i, c, num_seeds,
+        num_bonds, num_tasks, rank,
+        dec_max = DEC_MAX,
+        dec_warmup = DEC_WARMUP;
+
     unsigned int seed;
     params_t p;
     state_t *s;
+    output_files_t of;
 
     /* get options */
-    while ((c = getopt(argc, argv, "d:t:")) != -1)
+    while ((c = getopt(argc, argv, "d:t:w:")) != -1)
     {
         switch (c)
         {
             case 'd':
                 dec_max = atoi(optarg);
                 break;
+            case 'w':
+                dec_warmup = atoi(optarg);
+                break;
             case 't':
-                filename = optarg;
+                fname_temps = optarg;
                 break;
             case '?':
                 if (optopt == 'c')
@@ -61,22 +107,23 @@ int main(int argc, char *argv[])
     }
         
     /* read temperatures */
-    SAFE_OPEN(fp, filename, "r");
+
+    SAFE_OPEN(fp_in, fname_temps, "r");
 
     for (i = 0; i < NUM_REPLICAS; i++)
     {
-        if (fscanf(fp, "%lf", &T[i]) != EOF)
-            p.beta[i] = 1./T[i];
+        if (fscanf(fp_in, "%lf", p.T + i) != EOF)
+            p.beta[i] = 1./p.T[i];
         else
         {
             fprintf(stderr, "%s: error: not enough temperatures in %s\n",
-                    argv[0], filename);
+                    argv[0], fname_temps);
 
             return EXIT_FAILURE;
         }
     }
 
-    fclose(fp);
+    fclose(fp_in);
 
     /* start MPI */
     if ((c = MPI_Init(&argc, &argv)) != MPI_SUCCESS)
@@ -105,10 +152,9 @@ int main(int argc, char *argv[])
 
     /* load sample */
     seed = strtol(argv[optind + rank], NULL, 16); 
-    sprintf(buf, SAMPLE_FILENAME_FMT, seed);
-    SAFE_OPEN(fp, buf, "r");
+    OPEN_FILE("samp" SUFFIX, seed, buf, fp_in, "r");
 
-    if (sample_read(&s->sample, fp, &num_bonds) != 0 || num_bonds != MAX_BONDS)
+    if (sample_read(&s->sample, fp_in, &num_bonds) != 0 || num_bonds != MAX_BONDS)
     {
         fprintf(stderr, "%s: error loading sample from file `%s'\n",
                 argv[0], buf);
@@ -116,15 +162,24 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    fclose(fp);
+    fclose(fp_in);
 
-    /* open output file and run simulation */
-    sprintf(buf, OUTPUT_FILENAME_FMT, seed);
-    SAFE_OPEN(fp, buf, "w");
-    run_sim(s, &p, T, seed, dec_max, fp);
+    /* open output files */
+#define OPEN_OUTPUT(name, dummy) \
+    OPEN_FILE(#name SUFFIX, seed, buf, of.name, "w");
 
-    fclose(fp);
+    MODULES(OPEN_OUTPUT)
+
+    /* run the simulation */
+    run_sim(s, &p, seed, dec_warmup, dec_max, &of);
+
+    /* clean up */
+
+#define CLOSE_OUTPUT(name, dummy) fclose(of.name);
+    MODULES(CLOSE_OUTPUT)
+
     free(s);
     MPI_Finalize();
+
     return EXIT_SUCCESS;
 }

@@ -13,9 +13,12 @@ scratch="/scratch/$USER/$$"
 mkdir -p $scratch
 cp -r $project_dir/* $scratch
 
+num_temps=$(wc -l < $tempset)
+cp $tempset "$scratch/temps.txt"
+
 # Compile
 cd $scratch
-./setup.sh
+NUM_REPLICAS=$num_temps ./setup.sh
 make
 
 # Generate samples
@@ -23,12 +26,12 @@ seeds=$(python dilute.py $N $Z $sigma -n $num_cores)
 
 # Run
 # Don't read or write to /home from here
-sigma_="$(echo $sigma | tr . _)"
-tempset="$scratch/data/tempsets/temps_s${sigma_}.txt"
-mpirun ./isg -d $dec_max -t $tempset $seeds
+mpirun ./isg -w $dec_warmup -d $dec_max -t "temps.txt" $seeds
 
 # Copy output to home directory, clean up.
-cp out*.txt $output_dir
+bzip2 -9 *.txt
+cp *.bz2 $output_dir
 cp *.h $output_dir
+cd
 rm -rf $scratch
 
