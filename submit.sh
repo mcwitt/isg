@@ -16,7 +16,7 @@ function askp {
 
 askp jobname "job$$" "job name"
 askp jobscript "$root/job-mpipks.sh.in" "template script"
-askp N 128 "N"
+askp LOG_N 7 "log_2 N"
 askp Z 6 "z"
 askp sigma "0.600" "sigma"
 
