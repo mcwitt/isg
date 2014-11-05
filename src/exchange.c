@@ -3,7 +3,8 @@
 
 void exchange_init(exchange_t *x,
                    const sample_t *s,
-                   const double beta[NUM_REPLICAS])
+                   const double beta[NUM_REPLICAS],
+                   rng_t *rng)
 {
     int i;
 
@@ -15,7 +16,8 @@ void exchange_init(exchange_t *x,
         x->b2r[i] = i;
         x->r2b[i] = i;
         x->swapped[i] = 0;
-        init_replica(s->h2m, s->um, x->S[i], x->h2[i], &x->u[i]);
+        init_replica(s->n, s->J4, s->h2m, s->um,
+                     x->S[i], x->h2[i], &x->u[i], rng);
     }
 }
 

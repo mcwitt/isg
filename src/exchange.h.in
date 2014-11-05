@@ -23,7 +23,8 @@ typedef struct
 
 void exchange_init(exchange_t *x,
                    const sample_t *sample,
-                   const double beta[NUM_REPLICAS]);
+                   const double beta[NUM_REPLICAS],
+                   rng_t *rng);
 
 void exchange_update(exchange_t *x, rng_t *rng);
 

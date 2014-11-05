@@ -13,11 +13,14 @@ typedef struct
 
 } replica_t;
 
-void init_replica(const double h2m[N],
+void init_replica(const int n[NZ_MAX],
+                  const double J4[NZ_MAX],
+                  const double h2m[N],
                   double um,
                   int S[N],
                   double h2[N],
-                  double *u);
+                  double *u,
+                  rng_t *rng);
 
 void update_replica(const int n[NZ_MAX],
                     const double J4[NZ_MAX],
