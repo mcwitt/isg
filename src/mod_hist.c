@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 
-int spin_overlap_part(const int S1[], const int S2[], int n)
+int spin_overlap_window(const int S1[], const int S2[], int w)
 {
     int i, sum = 0;
 
-    for (i = 0; i < n; i++)
+    for (i = 0; i < w; i++)
         sum += S1[i]*S2[i];
 
     return sum;
@@ -18,7 +18,7 @@ static void print_header(FILE *fp)
 {
     print_index_header(fp);
 
-    fprintf(fp, "%*s", 6, "n");
+    fprintf(fp, "%*s", 6, "W");
     fprintf(fp, "%*s", 6, "bin");
     fprintf(fp, "%*s", 12, "f");
     fprintf(fp, "\n");
@@ -36,18 +36,18 @@ void mod_hist_reset(mod_hist_t *self)
 
 static void accumulate(UINT *f, const int S1[], const int S2[])
 {
-    int i, n;
+    int i, w;
 
-    for (i = LOG_N, n = N;
+    for (i = LOG_N, w = N;
          i >= LOG_MIN_BLOCK_SIZE;
-         i--, f += n + 1, n /= 2)
+         i--, f += w + 1, w /= 2)
     {
         int j;
 
-        for (j = 0; j < N; j += n)
+        for (j = 0; j < N; j += w)
         {
-            int nq = spin_overlap_part(S1 + j, S2 + j, n);
-            f[(nq + n)/2]++;
+            int wq = spin_overlap_window(S1 + j, S2 + j, w);
+            f[(wq + w)/2]++;
         }
     }
 }
@@ -69,19 +69,19 @@ void mod_hist_update(mod_hist_t *self, const state_t *s)
 
 static void print(const UINT *f, const index_t *idx, double T, FILE *fp)
 {
-    int i, n;
+    int i, w;
 
-    for (i = LOG_N, n = N;
+    for (i = LOG_N, w = N;
          i >= LOG_MIN_BLOCK_SIZE;
-         i--, f += n + 1, n /= 2)
+         i--, f += w + 1, w /= 2)
     {
         int j;
 
-        for (j = 0; j < n+1; j++)
+        for (j = 0; j < w+1; j++)
         {
             index_print(idx, T, fp);
 
-            fprintf(fp, "%*d", 6, n);
+            fprintf(fp, "%*d", 6, w);
             fprintf(fp, "%*d", 6, j);
             fprintf(fp, "%*lu", 12, f[j]);
             fprintf(fp, "\n");
