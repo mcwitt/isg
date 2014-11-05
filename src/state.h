@@ -23,6 +23,13 @@ void state_init(state_t *s, const params_t *params, unsigned int seed);
 
 void state_update(state_t *s, int num_updates);
 
+void state_overlap(state_t *s,
+                   int w,
+                   double q2[NUM_REPLICAS],
+                   double q4[NUM_REPLICAS]);
+
+void state_link_overlap(state_t *s, double ql[NUM_REPLICAS]);
+
 void state_checkpoint(state_t *s, FILE *fp);
 
 void state_restore(state_t *s, FILE *fp);

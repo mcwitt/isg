@@ -17,9 +17,7 @@
     X(double, ql, "%*e", COL_WIDTH)
 #endif
 
-#define X(type, name, fmt, width) type name;
-typedef struct { MEAS_FIELDS } meas_data_t;
+#define X(type, name, fmt, width) type name[NUM_REPLICAS];
+typedef struct { MEAS_FIELDS } mod_meas_t;
 #undef X
-
-typedef struct { meas_data_t data[NUM_REPLICAS]; } mod_meas_t;
 

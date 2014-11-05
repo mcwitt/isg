@@ -13,10 +13,10 @@
 
 #define MODULES(_, ...)      \
     _(meas, __VA_ARGS__)     \
-    _(hist, __VA_ARGS__)     \
-    /*_(modes, __VA_ARGS__)*/    \
+    /*_(hist, __VA_ARGS__)     \
+    _(modes, __VA_ARGS__)    \
     _(corr, __VA_ARGS__)\
-    _(spinstate, __VA_ARGS__)\
+    _(spinstate, __VA_ARGS__)\*/
     
 
 #define MODULE_DECLARE(name, dummy) mod_##name##_t name;

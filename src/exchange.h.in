@@ -12,28 +12,20 @@ typedef struct
 {
     const sample_t *sample;
     const double *beta;
-    int b2r[NUM_REPLICAS];  /* beta index -> replica index */
-    int r2b[NUM_REPLICAS];  /* replica index -> beta index */
+    int ir[NUM_REPLICAS];  /* beta index -> replica index */
+    int ib[NUM_REPLICAS];  /* replica index -> beta index */
     int swapped[NUM_REPLICAS];
-    int S[NUM_REPLICAS][N];
-    double h2[NUM_REPLICAS][N];
+    int S[N][NUM_REPLICAS];
+    double h2[N][NUM_REPLICAS];
     double u[NUM_REPLICAS];
 
 } exchange_t;
 
 void exchange_init(exchange_t *x,
-                   const sample_t *sample,
-                   const double beta[NUM_REPLICAS]);
+                   const sample_t *s,
+                   const double beta[NUM_REPLICAS],
+                   rng_t *rng);
 
 void exchange_update(exchange_t *x, rng_t *rng);
-
-void exchange_get_replica(const exchange_t *x, int ib, replica_t *r);
-
-void update_exchange(const double beta[NUM_REPLICAS],
-                     const double u[NUM_REPLICAS],
-                     int b2r[NUM_REPLICAS],
-                     int r2b[NUM_REPLICAS],
-                     int swapped[NUM_REPLICAS],
-                     rng_t *rng);
 
 #endif
