@@ -22,7 +22,7 @@ NUM_REPLICAS=$num_temps ./setup.sh
 make
 
 # Generate samples
-seeds=$(python dilute.py $N $Z $sigma -n $num_cores)
+seeds=$(python dilute.py $((2**LOG_N)) $Z $sigma -n $num_cores)
 
 # Run
 # Don't read or write to /home from here
