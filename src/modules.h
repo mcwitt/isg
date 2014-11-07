@@ -7,14 +7,12 @@
 
 #include "mod_meas.h"
 #include "mod_hist.h"
-/*#include "mod_modes.h"*/
 #include "mod_corr.h"
 #include "mod_spinstate.h"
 
 #define MODULES(_, ...)      \
     _(meas, __VA_ARGS__)     \
     _(hist, __VA_ARGS__)     \
-    /*_(modes, __VA_ARGS__)*/    \
     _(corr, __VA_ARGS__)\
     _(spinstate, __VA_ARGS__)\
     
