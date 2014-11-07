@@ -26,7 +26,7 @@ seeds=$(python dilute.py $((2**LOG_N)) $Z $sigma -n $num_cores)
 
 # Run
 # Don't read or write to /home from here
-mpirun ./isg -w $dec_warmup -d $dec_max -t "temps.txt" $seeds
+time mpirun ./isg -w $dec_warmup -d $dec_max -t "temps.txt" $seeds
 
 # Copy output to home directory, clean up.
 bzip2 -9 *.txt
