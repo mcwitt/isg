@@ -116,3 +116,5 @@ void mod_meas_output(const mod_meas_t *self,
     fflush(fp);
 }
 
+void mod_meas_cleanup(mod_meas_t *self) {}
+

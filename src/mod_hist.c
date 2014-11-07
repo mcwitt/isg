@@ -103,3 +103,5 @@ void mod_hist_output(const mod_hist_t *self,
     fflush(fp);
 }
 
+void mod_hist_cleanup(mod_hist_t *self) {}
+

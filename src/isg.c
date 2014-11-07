@@ -52,6 +52,7 @@ void run_sim(state_t *s,
         MODULES(MODULE_OUTPUT, mods, s, &idx, num_updates, of);
     }
 
+    MODULES(MODULE_CLEANUP, mods);
     state_free(s);
 }
 

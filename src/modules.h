@@ -30,6 +30,9 @@
 #define MODULE_OUTPUT(name, mods, s, idx, num_updates, files) \
     mod_##name##_output(&mods.name, s, idx, num_updates, files->name);
 
+#define MODULE_CLEANUP(name, mods) \
+    mod_##name##_cleanup(&mods.name);
+
 #define MODULE_INTERFACE(_, dummy) \
     void mod_##_##_init(mod_##_##_t *self, FILE *fp);\
     void mod_##_##_reset(mod_##_##_t *self);\
@@ -38,7 +41,8 @@
                           const state_t *s,\
                           const index_t *idx,\
                           int num_updates, \
-                          FILE *fp);
+                          FILE *fp); \
+    void mod_##_##_cleanup(mod_##_##_t *self);
 
 #define DECLARE_STRUCT_MEMBER(name, type) type name;
 

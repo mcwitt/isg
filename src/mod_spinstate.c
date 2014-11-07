@@ -54,3 +54,6 @@ void mod_spinstate_output(const mod_spinstate_t *self,
 
     fflush(fp);
 }
+
+void mod_spinstate_cleanup(mod_spinstate_t *self) {}
+
