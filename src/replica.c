@@ -1,8 +1,26 @@
 #include "replica.h"
 #include <math.h>
 
-void init_replica(const int n[NZ_MAX],
-                  const double J4[NZ_MAX],
+#if Z == 0  /* all bonds are present */
+#define UPDATE(i, Si, ni, J4i, h2, u) { \
+    int j; \
+    *u -= Si*h2[i]; \
+    for (j = 0; j < N; j++) \
+        h2[j] += Si*J4i[j]; \
+}
+#else
+#define UPDATE(i, Si, ni, J4i, h2, u) { \
+    int j; \
+    *u -= Si*h2[i]; \
+    for (j = 0; j < Z_MAX; j++) { \
+        if (ni[j] == -1) break; \
+        h2[ni[j]] += Si*J4i[j]; \
+    } \
+}
+#endif
+
+void init_replica(const int n[N*Z_MAX],
+                  const double J4[N*Z_MAX],
                   const double h2m[N],
                   double um,
                   int S[N],
@@ -21,53 +39,37 @@ void init_replica(const int n[NZ_MAX],
 
     for (i = 0; i < N; i++)
     {
-        int k;
-
-        if (RNG_UNIFORM(rng) < 0.5)
-        {
-            S[i] = 1;
-        }
+        if (RNG_UNIFORM(rng) < 0.5) S[i] = 1;
         else
         {
             S[i] = -1;
-            *u += h2[i];
-
-            for (k = 0; k < Z_MAX; k++)
-            {
-                int ik = i*Z_MAX + k;
-                if (n[ik] == -1) break;
-                h2[n[ik]] -= J4[ik];
-            }
+            UPDATE(i, -1, n, J4, h2, u);
         }
+
+        n += Z_MAX; J4 += Z_MAX;
     }
 }
 
-void update_replica(const int n[NZ_MAX],
-                    const double J4[NZ_MAX],
+void update_replica(const int n[N*Z_MAX],
+                    const double J4[N*Z_MAX],
                     double beta,
                     int S[N],
                     double h2[N],
                     double *u,
                     rng_t *rng)
 {
-    int i, k;
-    double r;
+    int i;
 
     for (i = 0; i < N; i++)
     {
+        double r;
+
         if (S[i] == 1)
         {
             if (h2[i] < 0. || (r = RNG_UNIFORM(rng), r < exp(-beta*h2[i])))
             {
                 S[i] = -1;
-                *u += h2[i];
-
-                for (k = 0; k < Z_MAX; k++)
-                {
-                    int ik = i*Z_MAX + k;
-                    if (n[ik] == -1) break;
-                    h2[n[ik]] -= J4[ik];
-                }
+                UPDATE(i, -1, n, J4, h2, u);
             }
         }
         else    /* S[i] == -1 */
@@ -75,16 +77,11 @@ void update_replica(const int n[NZ_MAX],
             if (h2[i] > 0. || (r = RNG_UNIFORM(rng), r < exp(beta*h2[i])))
             {
                 S[i] = 1;
-                *u -= h2[i];
-
-                for (k = 0; k < Z_MAX; k++)
-                {
-                    int ik = i*Z_MAX + k;
-                    if (n[ik] == -1) break;
-                    h2[n[ik]] += J4[ik];
-                }
+                UPDATE(i, 1, n, J4, h2, u);
             }
         }
+
+        n += Z_MAX; J4 += Z_MAX;
     }
 }
 

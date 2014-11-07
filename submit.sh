@@ -17,7 +17,12 @@ function askp {
 askp jobname "job$$" "job name"
 askp jobscript "$root/job-mpipks.sh.in" "template script"
 askp LOG_N 7 "log_2 N"
-askp Z 6 "z"
+
+askp Z 6 "z (0 for undiluted)"
+if [ ! "$Z" -eq 0 ]; then
+    askp Z_MAX 24 "maximum z"
+fi
+
 askp sigma "0.600" "sigma"
 
 askp tempset \

@@ -30,11 +30,8 @@ getp LOG_MIN_BLOCK_SIZE 4
 
 # compute derived constants
 setp N $((2**LOG_N))
-setp MAX_BONDS $((N*Z/2))
-setp NZ_MAX $((N*Z_MAX))
 setp UPDATES_PER_MEAS $((2**LOG_UPDATES_PER_MEAS))
 setp MIN_BLOCK_SIZE $((2**LOG_MIN_BLOCK_SIZE))
-setp NUM_HIST_BINS $((1 + LOG_N + 2*N - LOG_MIN_BLOCK_SIZE - MIN_BLOCK_SIZE))
 
 for f in $srcdir/*.in; do
     $cmd $f > $(basename "${f%.in}")

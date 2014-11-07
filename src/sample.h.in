@@ -3,18 +3,24 @@
 
 #include <stdio.h>
 
-#define N           @N@
-#define LOG_N       @LOG_N@
+#define N       @N@
+#define LOG_N   @LOG_N@
+#define Z       @Z@
+
+#if Z == 0
+#define Z_MAX       N
+#define MAX_BONDS   (N*(N-1)/2)
+#else
 #define Z_MAX       @Z_MAX@
-#define NZ_MAX      @NZ_MAX@
-#define MAX_BONDS   @MAX_BONDS@
+#define MAX_BONDS   (N*Z/2)
+#endif
 
 #define IS_SITE_INDEX(i) ((i) >= 0 && (i) < N)
 
 typedef struct
 {
-    int n[NZ_MAX];
-    double J4[NZ_MAX];
+    int n[N*Z_MAX];
+    double J4[N*Z_MAX];
     double h2m[N];
     double um;
     int z[N];
@@ -31,11 +37,15 @@ void sample_add_bond(sample_t *s, int i, int j, double v);
 
 int sample_read(sample_t *s, FILE *fp, int *num_bonds);
 
-void reset_bonds(int n[NZ_MAX], int z[N], double h2m[N], double *um);
+void reset_bonds(int n[N*Z_MAX],
+                 double J4[N*Z_MAX],
+                 int z[N],
+                 double h2m[N],
+                 double *um);
 
 void add_bond(int i, int j, double v,
-              int n[NZ_MAX],
-              double J4[NZ_MAX],
+              int n[N*Z_MAX],
+              double J4[N*Z_MAX],
               int z[N],
               double h2m[N],
               double *um);

@@ -1,10 +1,11 @@
-#include <assert.h>
 #include "sample.h"
+#include <assert.h>
+#include <string.h>
 
 void sample_init(sample_t *s)
 {
     s->num_bonds = 0;
-    reset_bonds(s->n, s->z, s->h2m, &s->um);
+    reset_bonds(s->n, s->J4, s->z, s->h2m, &s->um);
 }
 
 void sample_add_bond(sample_t *s, int i, int j, double v)
@@ -37,8 +38,8 @@ int sample_read(sample_t *s, FILE *fp, int *num_bonds)
 }
 
 void add_bond(int i, int j, double v,
-              int n[NZ_MAX],
-              double J4[NZ_MAX],
+              int n[N*Z_MAX],
+              double J4[N*Z_MAX],
               int z[N],
               double h2m[N],
               double *um)
@@ -59,19 +60,17 @@ void add_bond(int i, int j, double v,
     *um -= v;
 }
 
-void reset_bonds(int n[NZ_MAX], int z[N], double h2m[N], double *um)
+void reset_bonds(int n[N*Z_MAX],
+                 double J4[N*Z_MAX],
+                 int z[N],
+                 double h2m[N],
+                 double *um)
 {
-    int i, k;
-
     *um = 0.;
-    
-    for (i = 0; i < N; i++)
-    {
-        z[i] = 0;
-        h2m[i] = 0.;
 
-        for (k = 0; k < Z_MAX; k++)
-            n[i*Z_MAX + k] = -1;
-    }
+    memset(z,   0,  N*sizeof(int));
+    memset(h2m, 0., N*sizeof(double));
+    memset(n,  -1,  N*Z_MAX*sizeof(int));
+    memset(J4,  0., N*Z_MAX*sizeof(double));
 }
 
