@@ -10,11 +10,16 @@
 #include "mod_corr.h"
 #include "mod_spinstate.h"
 
-#define MODULES(_, ...)      \
-    _(meas, __VA_ARGS__)     \
-    _(hist, __VA_ARGS__)     \
-    _(corr, __VA_ARGS__)\
-    _(spinstate, __VA_ARGS__)\
+#if BIG_MEASUREMENTS
+#define MODULES(_, ...) \
+    _(meas, __VA_ARGS__) \
+    _(hist, __VA_ARGS__) \
+    _(corr, __VA_ARGS__) \
+    _(spinstate, __VA_ARGS__)
+#else
+#define MODULES(_, ...) \
+    _(meas, __VA_ARGS__)
+#endif
     
 
 #define MODULE_DECLARE(name, dummy) mod_##name##_t name;

@@ -1,15 +1,14 @@
 #include "replica.h"
 #include <math.h>
 
-#if Z == 0  /* all bonds are present */
-#define UPDATE(i, Si, ni, J4i, h2, u) { \
+#define UPDATE_UNDILUTE(i, Si, J4i, h2, u) { \
     int j; \
     *u -= Si*h2[i]; \
     for (j = 0; j < N; j++) \
         h2[j] += Si*J4i[j]; \
 }
-#else
-#define UPDATE(i, Si, ni, J4i, h2, u) { \
+
+#define UPDATE_DILUTE(i, Si, ni, J4i, h2, u) { \
     int j; \
     *u -= Si*h2[i]; \
     for (j = 0; j < Z_MAX; j++) { \
@@ -17,6 +16,11 @@
         h2[ni[j]] += Si*J4i[j]; \
     } \
 }
+
+#if Z == 0  /* all bonds are present */
+#define UPDATE(i, Si, ni, J4i, h2, u) UPDATE_UNDILUTE(i, Si, J4i, h2, u)
+#else
+#define UPDATE(i, Si, ni, J4i, h2, u) UPDATE_DILUTE(i, Si, ni, J4i, h2, u)
 #endif
 
 void init_replica(const int n[N*Z_MAX],

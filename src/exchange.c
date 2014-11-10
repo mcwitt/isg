@@ -67,10 +67,10 @@ void update_exchange(const double beta[NUM_REPLICAS],
 
         if (du < 0. || (r = RNG_UNIFORM(rng), r < exp(db*du)))
         {
-#define LINK(ir, ib) { b2r[ib] = ir; r2b[ir] = ib; }
-            LINK(ir1, ib2); /* link replica 1 to temperature 2 */
-            LINK(ir2, ib1); /* etc. */
-#undef LINK
+#define SET_TEMP(ir, ib) { b2r[ib] = ir; r2b[ir] = ib; }
+            SET_TEMP(ir1, ib2); /* link replica 1 to temperature 2 */
+            SET_TEMP(ir2, ib1); /* etc. */
+#undef SET_TEMP
             swapped[ib2] = 1;
         }
         else swapped[ib2] = 0;

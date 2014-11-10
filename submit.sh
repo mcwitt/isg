@@ -32,6 +32,7 @@ askp tempset \
 askp dec_warmup 10 "number of warmup decades"
 askp dec_max 16 "number of decades"
 askp REPLICA_EXCHANGE 0 "enable replica exchange"
+askp BIG_MEASUREMENTS 1 "big measurements"
 askp num_cores 1 "number of cores per job"
 askp num_jobs 100 "number of jobs"
 askp h_rss "8G" "reserve memory"
