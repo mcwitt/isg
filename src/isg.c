@@ -1,5 +1,6 @@
 #include "isg.h"
 #include "modules.h"
+#include <assert.h>
 #include <ctype.h>
 #include <math.h>
 #include <mpi.h>
@@ -62,7 +63,7 @@ int main(int argc, char *argv[])
     char buf[50], *fname_temps = TEMP_FILE;
 
     int i, c, num_seeds,
-        num_bonds, num_tasks, rank,
+        num_tasks, rank,
         dec_max = DEC_MAX,
         dec_warmup = DEC_WARMUP;
 
@@ -154,15 +155,8 @@ int main(int argc, char *argv[])
     /* load sample */
     seed = strtol(argv[optind + rank], NULL, 16); 
     OPEN_FILE("samp" SUFFIX, seed, buf, fp_in, "r");
-
-    if (sample_read(&s->sample, fp_in, &num_bonds) != 0 || num_bonds != MAX_BONDS)
-    {
-        fprintf(stderr, "%s: error loading sample from file `%s'\n",
-                argv[0], buf);
-
-        exit(EXIT_FAILURE);
-    }
-
+    sample_read(&s->sample, fp_in);
+    assert(s->sample.num_bonds == NUM_BONDS);
     fclose(fp_in);
 
     /* open output files */

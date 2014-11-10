@@ -17,27 +17,26 @@ function askp {
 askp jobname "job$$" "job name"
 askp jobscript "$root/job-mpipks.sh.in" "template script"
 askp LOG_N 7 "log_2 N"
+askp sigma "0.600" "sigma"
+askp DILUTE 1 "dilute model"
 
-askp Z 6 "z (0 for undiluted)"
-if [ ! "$Z" -eq 0 ]; then
+if [ "$DILUTE" -eq 1 ]; then
+    askp Z 6 "average z"
     askp Z_MAX 24 "maximum z"
+else
+    export Z=0
 fi
 
-askp sigma "0.600" "sigma"
-
-askp tempset \
-    "$root/data/tempsets/temps_s$(echo $sigma | tr . _).txt" \
-    "temperature set"
-
-askp dec_warmup 10 "number of warmup decades"
+askp tempset "./temps.txt" "temperature set"
+askp dec_warmup 3 "number of warmup decades"
 askp dec_max 16 "number of decades"
 askp REPLICA_EXCHANGE 0 "enable replica exchange"
 askp BIG_MEASUREMENTS 1 "big measurements"
 askp num_cores 1 "number of cores per job"
 askp num_jobs 100 "number of jobs"
-askp h_rss "8G" "reserve memory"
-askp h_cpu "12:00:00" "reserve CPU time"
-askp h_fsize "1G" "reserve storage"
+askp h_rss "4G" "reserve memory"
+askp h_cpu "2:00:00" "reserve CPU time"
+askp h_fsize "2G" "reserve storage"
 askp hw "x86_64" "CPU arch"
 askp output_dir "$(pwd)" "output directory"
 

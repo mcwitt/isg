@@ -17,6 +17,7 @@ function setp {
 getp srcdir $srcdir
 
 getp LOG_N 7
+getp DILUTE 0
 getp Z 6
 getp Z_MAX 24
 
