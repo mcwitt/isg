@@ -27,7 +27,7 @@ def bonds(N, sigma=0., distance=chord_distance):
     """
     
     r = distance(N, np.arange(N))
-    cc = (2./N)/sum(r[1:]**(-2.*sigma))
+    cc = 1./sum(r[1:]**(-2.*sigma))
     c = sqrt(cc)
     
     return [(i, j, normal(0, c/r[j-i]**sigma)) 
