@@ -36,11 +36,9 @@ void mod_hist_reset(mod_hist_t *self)
 
 static void accumulate(UINT *f, const int S1[], const int S2[])
 {
-    int i, w;
+    int i, w = 1;
 
-    for (i = LOG_N, w = N;
-         i >= LOG_MIN_BLOCK_SIZE;
-         i--, f += w + 1, w /= 2)
+    for (i = 0; i <= LOG_N; i++)
     {
         int j;
 
@@ -49,6 +47,9 @@ static void accumulate(UINT *f, const int S1[], const int S2[])
             int wq = spin_overlap_window(S1 + j, S2 + j, w);
             f[(wq + w)/2]++;
         }
+
+        f += w + 1;
+        w *= 2;
     }
 }
 
@@ -69,11 +70,9 @@ void mod_hist_update(mod_hist_t *self, const state_t *s)
 
 static void print(const UINT *f, const index_t *idx, double T, FILE *fp)
 {
-    int i, w;
+    int i, w = 1;
 
-    for (i = LOG_N, w = N;
-         i >= LOG_MIN_BLOCK_SIZE;
-         i--, f += w + 1, w /= 2)
+    for (i = 0; i <= LOG_N; i++)
     {
         int j;
 
@@ -86,6 +85,9 @@ static void print(const UINT *f, const index_t *idx, double T, FILE *fp)
             fprintf(fp, "%*lu", 12, f[j]);
             fprintf(fp, "\n");
         }
+
+        f += w + 1;
+        w *= 2;
     }
 }
 

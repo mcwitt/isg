@@ -2,14 +2,7 @@
 #include "sample.h"
 #include <stdint.h>
 
-#define MIN_BLOCK_SIZE @MIN_BLOCK_SIZE@
-#define LOG_MIN_BLOCK_SIZE @LOG_MIN_BLOCK_SIZE@
-
-#if (LOG_MIN_BLOCK_SIZE > LOG_N)
-#error require LOG_MIN_BLOCK_SIZE <= LOG_N
-#endif
-
-#define NUM_HIST_BINS (1 + LOG_N + 2*N - LOG_MIN_BLOCK_SIZE - MIN_BLOCK_SIZE)
+#define NUM_HIST_BINS (2*N + LOG_N)
 
 typedef uint64_t UINT;
 
