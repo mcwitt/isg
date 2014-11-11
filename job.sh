@@ -6,18 +6,18 @@
 
 set -x  # echo commands
 
-project_dir="/home/wittmann/isg"
-
-# For faster disk access copy files to /scratch first.
-scratch="/scratch/$USER/$$"
+# Copy files to /scratch
+scratch="$scratch_root/$$"
 mkdir -p $scratch
-cp -r $project_dir/* $scratch
-
 num_temps=$(wc -l < $tempset)
 cp $tempset "$scratch/temps.txt"
 
-# Compile
+# Get source and compile
 cd $scratch
+git init
+git remote add origin $root
+git fetch origin
+git checkout $commit
 NUM_REPLICAS=$num_temps ./setup.sh
 make
 
@@ -28,10 +28,10 @@ seeds=$(python bonds.py $((2**LOG_N)) -z $Z --sigma $sigma --ns $num_cores)
 # Don't read or write to /home from here
 time mpirun ./isg -w $dec_warmup -d $dec_max -t "temps.txt" $seeds
 
-# Copy output to home directory, clean up.
+# Move output to home directory, clean up
 bzip2 -9 *.txt
-cp *.bz2 $output_dir
-cp *.h $output_dir
+mv *.bz2 $output_dir
+mv *.h $output_dir
 cd
 rm -rf $scratch
 
