@@ -82,7 +82,7 @@ static void print(const UINT *f, const index_t *idx, double T, FILE *fp)
 
             fprintf(fp, "%*d", 6, w);
             fprintf(fp, "%*d", 6, j);
-            fprintf(fp, "%*lu", 12, f[j]);
+            fprintf(fp, "%*llu", 12, f[j]);
             fprintf(fp, "\n");
         }
 
