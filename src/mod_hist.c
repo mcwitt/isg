@@ -18,8 +18,8 @@ static void print_header(FILE *fp)
 {
     print_index_header(fp);
 
-    fprintf(fp, "%*s", 6, "W");
-    fprintf(fp, "%*s", 6, "bin");
+    fprintf(fp, "%*s", COL_WIDTH_INT_N, "W");
+    fprintf(fp, "%*s", COL_WIDTH_INT_N, "bin");
     fprintf(fp, "%*s", 12, "f");
     fprintf(fp, "\n");
 }
@@ -80,8 +80,8 @@ static void print(const UINT *f, const index_t *idx, double T, FILE *fp)
         {
             index_print(idx, T, fp);
 
-            fprintf(fp, "%*d", 6, w);
-            fprintf(fp, "%*d", 6, j);
+            fprintf(fp, "%*d", COL_WIDTH_INT_N, w);
+            fprintf(fp, "%*d", COL_WIDTH_INT_N, j);
             fprintf(fp, "%*lu", 12, f[j]);
             fprintf(fp, "\n");
         }

@@ -8,8 +8,8 @@ static void print_header(FILE *fp)
 {
     print_index_header(fp);
 
-    fprintf(fp, "%*s", 6, "r");
-    fprintf(fp, "%*s", COL_WIDTH, "C4");
+    fprintf(fp, "%*s", COL_WIDTH_INT_N, "r");
+    fprintf(fp, "%*s", COL_WIDTH_FLOAT, "C4");
     fprintf(fp, "\n");
 }
 
@@ -84,8 +84,8 @@ static void print(const double C4[],
     {
         index_print(idx, T, fp);
 
-        fprintf(fp, "%*d", 6, r);
-        fprintf(fp, "%*e", COL_WIDTH, C4[r]/num_meas);
+        fprintf(fp, "%*d", COL_WIDTH_INT_N, r);
+        fprintf(fp, "%*e", COL_WIDTH_FLOAT, C4[r]/num_meas);
         fprintf(fp, "\n");
     }
 }
