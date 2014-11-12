@@ -29,6 +29,7 @@ seeds=$(python bonds.py $((2**LOG_N)) -z $Z --sigma $sigma --ns $num_cores)
 time mpirun ./isg -w $dec_warmup -d $dec_max -t "temps.txt" $seeds
 
 # Move output to home directory, clean up
+[ "$KEEP_SAMPLES" -eq 1 ] || rm samp_*.txt
 bzip2 -9 *.txt
 mv *.bz2 $output_dir
 mv *.h $output_dir

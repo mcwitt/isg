@@ -38,19 +38,31 @@ static void accumulate(UINT *f, const int S1[], const int S2[])
 {
     int i, w = 1;
 
-    for (i = 0; i <= LOG_N; i++)
-    {
-        int j;
+    /* w = block size, m = number of histogram bins */
 
-        for (j = 0; j < N; j += w)
-        {
-            int wq = spin_overlap_window(S1 + j, S2 + j, w);
-            f[(wq + w)/2]++;
-        }
+#define NEXT_BLOCK(w, m)                            \
+{                                                   \
+    int j;                                          \
+                                                    \
+    for (j = 0; j < N; j += w)                      \
+    {                                               \
+        int q = spin_overlap_window(S1+j, S2+j, w); \
+        f[(q + w)/(w/m)/2]++;                       \
+    }                                               \
+                                                    \
+    f += m + 1;                                     \
+    w *= 2;                                         \
+}
 
-        f += w + 1;
-        w *= 2;
-    }
+    /* one bin per q value for smaller blocks */
+    for (i = 0; i <= LOG_M; i++)
+        NEXT_BLOCK(w, w);
+
+    /* "coarse-grain" histograms for larger blocks */
+    for (i = LOG_M + 1; i <= LOG_N; i++)
+        NEXT_BLOCK(w, M);
+
+#undef NEXT_BLOCK
 }
 
 void mod_hist_update(mod_hist_t *self, const state_t *s)
@@ -72,23 +84,30 @@ static void print(const UINT *f, const index_t *idx, double T, FILE *fp)
 {
     int i, w = 1;
 
-    for (i = 0; i <= LOG_N; i++)
-    {
-        int j;
+#define PRINT_BLOCK(w, m)                       \
+{                                               \
+    int j;                                      \
+                                                \
+    for (j = 0; j < m+1; j++)                   \
+    {                                           \
+        index_print(idx, T, fp);                \
+        fprintf(fp, "%*d", COL_WIDTH_INT_N, w); \
+        fprintf(fp, "%*d", COL_WIDTH_INT_N, j); \
+        fprintf(fp, "%*lu", 12, f[j]);          \
+        fprintf(fp, "\n");                      \
+    }                                           \
+                                                \
+    f += m + 1;                                 \
+    w *= 2;                                     \
+}
 
-        for (j = 0; j < w+1; j++)
-        {
-            index_print(idx, T, fp);
+    for (i = 0; i <= LOG_M; i++)
+        PRINT_BLOCK(w, w);
 
-            fprintf(fp, "%*d", COL_WIDTH_INT_N, w);
-            fprintf(fp, "%*d", COL_WIDTH_INT_N, j);
-            fprintf(fp, "%*lu", 12, f[j]);
-            fprintf(fp, "\n");
-        }
+    for (i = LOG_M + 1; i <= LOG_N; i++)
+        PRINT_BLOCK(w, M);
 
-        f += w + 1;
-        w *= 2;
-    }
+#undef PRINT_BLOCK
 }
 
 void mod_hist_output(const mod_hist_t *self,

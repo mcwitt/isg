@@ -22,6 +22,7 @@
 #else
 #define MODULES(_, ...) \
     _(meas, __VA_ARGS__) \
+    _(hist, __VA_ARGS__) \
     _(corr_logn, __VA_ARGS__)
 #endif
     

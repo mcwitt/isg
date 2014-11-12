@@ -26,11 +26,13 @@ getp REPLICA_EXCHANGE 1
 
 getp FULL_OUTPUT 0
 getp LOG_UPDATES_PER_MEAS 3
+getp LOG_MAX_HIST_SIZE 10
 getp RNG "RNG_MT19937"
 
 # compute derived constants
 setp N $((2**LOG_N))
 setp UPDATES_PER_MEAS $((2**LOG_UPDATES_PER_MEAS))
+setp MAX_HIST_SIZE $((2**LOG_MAX_HIST_SIZE))
 
 for f in $srcdir/*.in; do
     $cmd $f > $(basename "${f%.in}")

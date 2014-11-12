@@ -2,9 +2,20 @@
 #include "sample.h"
 #include <stdint.h>
 
-#define NUM_HIST_BINS (2*N + LOG_N)
+#define MAX_HIST_SIZE @MAX_HIST_SIZE@
+#define LOG_MAX_HIST_SIZE @LOG_MAX_HIST_SIZE@
+
+#if LOG_N <= LOG_MAX_HIST_SIZE
+#define M N
+#define LOG_M LOG_N
+#define NUM_BINS (2*N + LOG_N)
+#else
+#define M MAX_HIST_SIZE
+#define LOG_M LOG_MAX_HIST_SIZE
+#define NUM_BINS (2*N + LOG_N + (LOG_N-LOG_M)*(M+1))
+#endif
 
 typedef uint64_t UINT;
 
-typedef struct { UINT f[NUM_REPLICAS][NUM_HIST_BINS]; } mod_hist_t;
+typedef struct { UINT f[NUM_REPLICAS][NUM_BINS]; } mod_hist_t;
 
