@@ -1,7 +1,10 @@
 #include "exchange.h"
+#include "output.h"
 #include "sample.h"
 #include <complex.h>
 #include <fftw3.h>
+
+#define COL_WIDTH_R (NUM_DIGITS_N + COL_PAD)
 
 typedef struct
 {

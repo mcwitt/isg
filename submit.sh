@@ -39,8 +39,8 @@ else setp Z 0
 fi
 
 askp tempset "./temps.txt" "temperature set"
-askp dec_warmup 3 "number of warmup decades"
-askp dec_max 16 "number of decades"
+askp LOG_WARMUP_UPDATES 3 "number of warmup decades"
+askp LOG_NUM_UPDATES 16 "number of decades"
 askp REPLICA_EXCHANGE 0 "enable replica exchange"
 askp FULL_OUTPUT 0 "full output [O(N) space]"
 askp KEEP_SAMPLES 0 "keep samples"

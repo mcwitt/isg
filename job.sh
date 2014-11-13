@@ -26,7 +26,7 @@ seeds=$(python bonds.py $((2**LOG_N)) -z $Z --sigma $sigma --ns $num_cores)
 
 # Run
 # Don't read or write to /home from here
-time mpirun ./isg -w $dec_warmup -d $dec_max -t "temps.txt" $seeds
+time mpirun ./isg $seeds
 
 # Move output to home directory, clean up
 [ "$KEEP_SAMPLES" -eq 1 ] || rm samp_*.txt

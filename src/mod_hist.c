@@ -1,5 +1,4 @@
 #include "mod_hist.h"
-#include "output.h"
 #include "state.h"
 #include <stdio.h>
 #include <string.h>
@@ -18,9 +17,9 @@ static void print_header(FILE *fp)
 {
     print_index_header(fp);
 
-    fprintf(fp, "%*s", COL_WIDTH_INT_N, "W");
-    fprintf(fp, "%*s", COL_WIDTH_INT_N, "bin");
-    fprintf(fp, "%*s", 12, "f");
+    fprintf(fp, "%*s", COL_WIDTH_W,   "W");
+    fprintf(fp, "%*s", COL_WIDTH_BIN, "bin");
+    fprintf(fp, "%*s", COL_WIDTH_F,   "f");
     fprintf(fp, "\n");
 }
 
@@ -84,21 +83,21 @@ static void print(const UINT *f, const index_t *idx, double T, FILE *fp)
 {
     int i, w = 1;
 
-#define PRINT_BLOCK(w, m)                       \
-{                                               \
-    int j;                                      \
-                                                \
-    for (j = 0; j < m+1; j++)                   \
-    {                                           \
-        index_print(idx, T, fp);                \
-        fprintf(fp, "%*d", COL_WIDTH_INT_N, w); \
-        fprintf(fp, "%*d", COL_WIDTH_INT_N, j); \
-        fprintf(fp, "%*lu", 12, f[j]);          \
-        fprintf(fp, "\n");                      \
-    }                                           \
-                                                \
-    f += m + 1;                                 \
-    w *= 2;                                     \
+#define PRINT_BLOCK(w, m)                           \
+{                                                   \
+    int j;                                          \
+                                                    \
+    for (j = 0; j < m+1; j++)                       \
+    {                                               \
+        index_print(idx, T, fp);                    \
+        fprintf(fp, "%*d",  COL_WIDTH_W,    w);     \
+        fprintf(fp, "%*d",  COL_WIDTH_BIN,  j);     \
+        fprintf(fp, "%*lu", COL_WIDTH_F,    f[j]);  \
+        fprintf(fp, "\n");                          \
+    }                                               \
+                                                    \
+    f += m + 1;                                     \
+    w *= 2;                                         \
 }
 
     for (i = 0; i <= LOG_M; i++)
