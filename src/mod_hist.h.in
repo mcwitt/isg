@@ -7,21 +7,21 @@
 #define MAX_HIST_SIZE @MAX_HIST_SIZE@
 #define LOG_MAX_HIST_SIZE @LOG_MAX_HIST_SIZE@
 
-#if LOG_N <= LOG_MAX_HIST_SIZE
-#define M N
-#define LOG_M LOG_N
-#define NUM_BINS (2*N + LOG_N)
+#if LOG_MAX_HIST_SIZE >= LOG_N
+#define M           N
+#define LOG_M       LOG_N
+#define NUM_BINS    (2*N + LOG_N)
 #else
-#define M MAX_HIST_SIZE
-#define LOG_M LOG_MAX_HIST_SIZE
-#define NUM_BINS (2*N + LOG_N + (LOG_N-LOG_M)*(M+1))
+#define M           MAX_HIST_SIZE
+#define LOG_M       LOG_MAX_HIST_SIZE
+#define NUM_BINS    (2*M + LOG_M + (LOG_N - LOG_M)*(M + 1))
 #endif
 
-#define NUM_DIGITS_NUPDATE  ((int) ceil(LOG_NUM_UPDATES * M_LN2/M_LN10))
+#define NUM_DIGITS_UPDATES ((int) ceil(LOG_NUM_UPDATES * M_LN2/M_LN10))
 
-#define COL_WIDTH_W         (NUM_DIGITS_N + COL_PAD)
-#define COL_WIDTH_BIN       (NUM_DIGITS_N + COL_PAD)
-#define COL_WIDTH_F         (NUM_DIGITS_N + NUM_DIGITS_NUPDATE + COL_PAD)
+#define COL_WIDTH_W     (NUM_DIGITS_N + COL_PAD)
+#define COL_WIDTH_BIN   (NUM_DIGITS_N + COL_PAD)
+#define COL_WIDTH_F     (NUM_DIGITS_UPDATES + NUM_DIGITS_N + COL_PAD)
 
 typedef uint64_t UINT;
 

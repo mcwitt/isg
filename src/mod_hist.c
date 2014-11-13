@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int spin_overlap_window(const int S1[], const int S2[], int w)
+static int spin_overlap(const int S1[], const int S2[], int w)
 {
     int i, sum = 0;
 
@@ -17,9 +17,9 @@ static void print_header(FILE *fp)
 {
     print_index_header(fp);
 
-    fprintf(fp, "%*s", COL_WIDTH_W,   "W");
-    fprintf(fp, "%*s", COL_WIDTH_BIN, "bin");
-    fprintf(fp, "%*s", COL_WIDTH_F,   "f");
+    fprintf(fp, "%*s", COL_WIDTH_W,     "W");
+    fprintf(fp, "%*s", COL_WIDTH_BIN,   "bin");
+    fprintf(fp, "%*s", COL_WIDTH_F,     "f");
     fprintf(fp, "\n");
 }
 
@@ -37,20 +37,24 @@ static void accumulate(UINT *f, const int S1[], const int S2[])
 {
     int i, w = 1;
 
-    /* w = block size, m = number of histogram bins */
+    /*
+     * w = block size
+     * m = number of histogram bins
+     * w/m = bin size
+     */
 
-#define NEXT_BLOCK(w, m)                            \
-{                                                   \
-    int j;                                          \
-                                                    \
-    for (j = 0; j < N; j += w)                      \
-    {                                               \
-        int q = spin_overlap_window(S1+j, S2+j, w); \
-        f[(q + w)/(w/m)/2]++;                       \
-    }                                               \
-                                                    \
-    f += m + 1;                                     \
-    w *= 2;                                         \
+#define NEXT_BLOCK(w, m)                     \
+{                                            \
+    int j;                                   \
+                                             \
+    for (j = 0; j < N; j += w)               \
+    {                                        \
+        int q = spin_overlap(S1+j, S2+j, w); \
+        f[(q + w)/2/(w/m)]++;                \
+    }                                        \
+                                             \
+    f += m + 1;                              \
+    w *= 2;                                  \
 }
 
     /* one bin per q value for smaller blocks */
@@ -87,12 +91,12 @@ static void print(const UINT *f, const index_t *idx, double T, FILE *fp)
 {                                                   \
     int j;                                          \
                                                     \
-    for (j = 0; j < m+1; j++)                       \
+    for (j = 0; j < m + 1; j++)                     \
     {                                               \
         index_print(idx, T, fp);                    \
-        fprintf(fp, "%*d",  COL_WIDTH_W,    w);     \
-        fprintf(fp, "%*d",  COL_WIDTH_BIN,  j);     \
-        fprintf(fp, "%*lu", COL_WIDTH_F,    f[j]);  \
+        fprintf(fp, "%*d",  COL_WIDTH_W,     w);    \
+        fprintf(fp, "%*d",  COL_WIDTH_BIN,   j);    \
+        fprintf(fp, "%*lu", COL_WIDTH_F,     f[j]); \
         fprintf(fp, "\n");                          \
     }                                               \
                                                     \
