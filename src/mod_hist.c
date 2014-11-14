@@ -3,16 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-static int spin_overlap(const int S1[], const int S2[], int w)
-{
-    int i, sum = 0;
-
-    for (i = 0; i < w; i++)
-        sum += S1[i]*S2[i];
-
-    return sum;
-}
-
 static void print_header(FILE *fp)
 {
     print_index_header(fp);
@@ -33,39 +23,55 @@ void mod_hist_reset(mod_hist_t *self)
     memset(self->f, 0, sizeof self->f);
 }
 
-static void accumulate(UINT *f, const int S1[], const int S2[])
+static void moving_overlap(const int S1[],
+                           const int S2[],
+                           int w, /* block size */
+                           int m, /* bin size */
+                           UINT *f)
+{
+    int i, q = 0;
+
+#define Q(i) S1[i]*S2[i]
+
+    for (i = 0; i < w; i++)
+        q += Q(i);
+
+    for (i = 0; i < N-w; i++)
+    {
+        f[(q + w)/2/m]++;
+        q += Q(i+w) - Q(i);
+    }
+
+    for (i = N-w; i < N; i++)
+    {
+        f[(q + w)/2/m]++;
+        q += Q(i+w-N) - Q(i);
+    }
+
+#undef Q
+}
+
+static void accumulate(const int S1[], const int S2[], UINT *f)
 {
     int i, w = 1;
 
-    /*
-     * w = block size
-     * m = number of histogram bins
-     * w/m = bin size
-     */
-
-#define NEXT_BLOCK(w, m)                     \
-{                                            \
-    int j;                                   \
-                                             \
-    for (j = 0; j < N; j += w)               \
-    {                                        \
-        int q = spin_overlap(S1+j, S2+j, w); \
-        f[(q + w)/2/(w/m)]++;                \
-    }                                        \
-                                             \
-    f += m + 1;                              \
-    w *= 2;                                  \
-}
-
     /* one bin per q value for smaller blocks */
+
     for (i = 0; i <= LOG_M; i++)
-        NEXT_BLOCK(w, w);
+    {
+        moving_overlap(S1, S2, w, 1, f);
+        f += w + 1;
+        w *= 2;
+    }
 
     /* "coarse-grain" histograms for larger blocks */
-    for (i = LOG_M + 1; i <= LOG_N; i++)
-        NEXT_BLOCK(w, M);
 
-#undef NEXT_BLOCK
+    for (i = LOG_M + 1; i <= LOG_N; i++)
+    {
+        moving_overlap(S1, S2, w, M, f);
+        f += M + 1;
+        w *= 2;
+    }
 }
 
 void mod_hist_update(mod_hist_t *self, const state_t *s)
@@ -79,7 +85,7 @@ void mod_hist_update(mod_hist_t *self, const state_t *s)
         exchange_get_replica(&s->x1, i, &r1);
         exchange_get_replica(&s->x2, i, &r2);
 
-        accumulate(self->f[i], r1.S, r2.S);
+        accumulate(r1.S, r2.S, self->f[i]);
     }
 }
 
