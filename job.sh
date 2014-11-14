@@ -8,6 +8,7 @@ set -x  # echo commands
 
 # Copy files to /scratch
 scratch="$scratch_root/$$"
+rm -rf $scratch
 mkdir -p $scratch
 num_temps=$(wc -l < $tempset)
 cp $tempset "$scratch/temps.txt"
