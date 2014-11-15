@@ -1,37 +1,34 @@
 #include "replica.h"
 #include <math.h>
 
-#define UPDATE_DILUTE(i, Si, ni, J4i, h2, u) { \
-    int j; \
-    *u -= Si*h2[i]; \
-    for (j = 0; j < Z_MAX; j++) { \
-        if (ni[j] == -1) break; \
-        h2[ni[j]] += Si*J4i[j]; \
-    } \
+#define UPDATE_DILUTE(j, Si, ni, J4i, h2, u)    \
+{                                               \
+    for (j = 0; j < Z_MAX; j++)                 \
+    {                                           \
+        if (ni[j] == -1) break;                 \
+        h2[ni[j]] += Si*J4i[j];                 \
+    }                                           \
 }
 
-#define UPDATE_COMPLETE(i, Si, J4i, h2, u) { \
-    int j; \
-    *u -= Si*h2[i]; \
-    for (j = 0; j < N; j++) h2[j] += Si*J4i[j]; \
-}
+#define UPDATE_COMPLETE(j, Si, J4i, h2, u) \
+    for (j = 0; j < N; j++) h2[j] += Si*J4i[j];
 
 #if DILUTE
-#define UPDATE(i, Si, ni, J4i, h2, u) UPDATE_DILUTE(i, Si, ni, J4i, h2, u)
+#define UPDATE(j, Si, ni, J4i, h2, u) UPDATE_DILUTE(j, Si, ni, J4i, h2, u)
 #else
-#define UPDATE(i, Si, ni, J4i, h2, u) UPDATE_COMPLETE(i, Si, J4i, h2, u)
+#define UPDATE(j, Si, ni, J4i, h2, u) UPDATE_COMPLETE(j, Si, J4i, h2, u)
 #endif
 
-void init_replica(const int n[N*Z_MAX],
-                  const double J4[N*Z_MAX],
-                  const double h2m[N],
+void init_replica(const int * restrict n,
+                  const double * restrict J4,
+                  const double * restrict h2m,
                   double um,
-                  int S[N],
-                  double h2[N],
-                  double *u,
+                  int * restrict S,
+                  double * restrict h2,
+                  double * restrict u,
                   rng_t *rng)
 {
-    int i;
+    int i, j;
 
     *u = um;
 
@@ -46,22 +43,24 @@ void init_replica(const int n[N*Z_MAX],
         else
         {
             S[i] = -1;
-            UPDATE(i, -1, n, J4, h2, u);
+            *u += h2[i];
+            UPDATE(j, -1, n, J4, h2, u);
         }
 
-        n += Z_MAX; J4 += Z_MAX;
+        n += Z_MAX;
+        J4 += Z_MAX;
     }
 }
 
-void update_replica(const int n[N*Z_MAX],
-                    const double J4[N*Z_MAX],
+void update_replica(const int * restrict n,
+                    const double * restrict J4,
                     double beta,
-                    int S[N],
-                    double h2[N],
-                    double *u,
+                    int * restrict S,
+                    double * restrict h2,
+                    double * restrict u,
                     rng_t *rng)
 {
-    int i;
+    int i, j;
 
     for (i = 0; i < N; i++)
     {
@@ -72,7 +71,8 @@ void update_replica(const int n[N*Z_MAX],
             if (h2[i] < 0. || (r = RNG_UNIFORM(rng), r < exp(-beta*h2[i])))
             {
                 S[i] = -1;
-                UPDATE(i, -1, n, J4, h2, u);
+                *u += h2[i];
+                UPDATE(j, -1, n, J4, h2, u);
             }
         }
         else    /* S[i] == -1 */
@@ -80,11 +80,13 @@ void update_replica(const int n[N*Z_MAX],
             if (h2[i] > 0. || (r = RNG_UNIFORM(rng), r < exp(beta*h2[i])))
             {
                 S[i] = 1;
-                UPDATE(i, 1, n, J4, h2, u);
+                *u -= h2[i];
+                UPDATE(j, 1, n, J4, h2, u);
             }
         }
 
-        n += Z_MAX; J4 += Z_MAX;
+        n += Z_MAX;
+        J4 += Z_MAX;
     }
 }
 

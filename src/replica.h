@@ -13,21 +13,21 @@ typedef struct
 
 } replica_t;
 
-void init_replica(const int n[N*Z_MAX],
-                  const double J4[N*Z_MAX],
-                  const double h2m[N],
+void init_replica(const int * restrict n,
+                  const double * restrict J4,
+                  const double * restrict h2m,
                   double um,
-                  int S[N],
-                  double h2[N],
-                  double *u,
+                  int * restrict S,
+                  double * restrict h2,
+                  double * restrict u,
                   rng_t *rng);
 
-void update_replica(const int n[N*Z_MAX],
-                    const double J4[N*Z_MAX],
+void update_replica(const int * restrict n,
+                    const double * restrict J4,
                     double beta,
-                    int S[N],
-                    double h2[N],
-                    double *u,
+                    int * restrict S,
+                    double * restrict h2,
+                    double * restrict u,
                     rng_t *rng);
 
 #endif

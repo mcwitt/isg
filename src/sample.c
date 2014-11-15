@@ -2,27 +2,30 @@
 #include <assert.h>
 #include <string.h>
 
-#define ADD_NEIGHBOR_DILUTE(i, j, v, n, J4, z, h2m) { \
-    assert(z[i] < Z_MAX); \
-    n[i*Z_MAX + z[i]] = j; \
-    J4[i*Z_MAX + z[i]] = 4.*v; \
-    h2m[i] += 2.*v; \
-    ++z[i]; \
+static void add_neighbor_dilute(int i, int j, double v,
+                                int *n, double *J4, int *z, double *h2m)
+{
+    assert(z[i] < Z_MAX);
+    n[i*Z_MAX + z[i]] = j;
+    J4[i*Z_MAX + z[i]] = 4.*v;
+    h2m[i] += 2.*v;
+    ++z[i];
 }
 
-#define ADD_NEIGHBOR_COMPLETE(i, j, v, J4, h2m) { \
-    J4[i*Z_MAX + j] = 4.*v; \
-    h2m[i] += 2.*v; \
+static void add_neighbor_complete(int i, int j, double v,
+                                  double *J4, int *z, double *h2m)
+{
+    J4[i*Z_MAX + j] = 4.*v;
+    h2m[i] += 2.*v;
 }
 
 #if DILUTE
 #define ADD_NEIGHBOR(i, j, v, n, J4, z, h2m) \
-    ADD_NEIGHBOR_DILUTE(i, j, v, n, J4, z, h2m)
+    add_neighbor_dilute(i, j, v, n, J4, z, h2m)
 #else
 #define ADD_NEIGHBOR(i, j, v, n, J4, z, h2m) \
-    ADD_NEIGHBOR_COMPLETE(i, j, v, J4, h2m)
+    add_neighbor_complete(i, j, v, J4, h2m)
 #endif
-
 
 void sample_init(sample_t *s)
 {
