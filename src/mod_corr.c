@@ -1,6 +1,7 @@
 #include "mod_corr.h"
 #include "state.h"
 #include <math.h>
+#include <stdio.h>
 #include <string.h>
 
 static void print_header(FILE *fp)
@@ -14,14 +15,6 @@ static void print_header(FILE *fp)
 
 void mod_corr_init(mod_corr_t *self, FILE *fp)
 {
-    self->cr = (double*) fftw_malloc(sizeof(double) * N);
-    self->ck = (complex double*) fftw_malloc(sizeof(complex double) * N);
-
-    self->dft = fftw_plan_dft_r2c_1d(N, self->cr, self->ck, FFTW_MEASURE);
-
-    self->idct = fftw_plan_r2r_1d(N/2 + 1, self->cr, self->cr,
-                                  FFTW_REDFT00, FFTW_MEASURE);
-
     print_header(fp);
 }
 
@@ -32,26 +25,27 @@ void mod_corr_reset(mod_corr_t *self)
 
 static void accumulate(const int S1[],
                        const int S2[],
-                       double C4[],
-                       double cr[],
-                       complex double ck[],
-                       fftw_plan dft,
-                       fftw_plan idct)
+                       double C4[])
 {
-    int i;
+    int i, r = 0;
 
-    /* use convolution theorem to compute correlation function */
+    /*
+     * compute correlation function at logarithmically-spaced points
+     * (no boost from fft/convolution in this case)
+     */
 
-    /* compute the overlap field */
-    for (i = 0; i < N; i++) cr[i] = (1./N)*S1[i]*S2[i];
+    for (i = 0; i < LOG_N; i++)
+    {
+        int j, sum = 0;
 
-    /* FT to k-space and square */
-    fftw_execute(dft);
-    for (i = 0; i <= N/2; i++) cr[i] = pow(cabs(ck[i]), 2);
+        for (j = 0; j < N-r; j++)
+            sum += S1[j]*S2[j]*S1[j+r]*S2[j+r];
+        for (j = N-r; j < N; j++)
+            sum += S1[j]*S2[j]*S1[j+r-N]*S2[j+r-N];
 
-    /* FT back to real space */
-    fftw_execute(idct);
-    for (i = 0; i < N/2; i++) C4[i] += cr[i];
+        C4[i] += (double) sum/N;
+        r = 2*r + 1;
+    }
 }
 
 void mod_corr_update(mod_corr_t *self, const state_t *s)
@@ -65,9 +59,7 @@ void mod_corr_update(mod_corr_t *self, const state_t *s)
         exchange_get_replica(&s->x1, i, &r1);
         exchange_get_replica(&s->x2, i, &r2);
 
-        accumulate(r1.S, r2.S, self->C4[i],
-                   self->cr, self->ck,
-                   self->dft, self->idct);
+        accumulate(r1.S, r2.S, self->C4[i]);
     }
 }
 
@@ -77,23 +69,25 @@ static void print(const double C4[],
                   double T,
                   FILE *fp)
 {
-    int r;
+    int i, r = 0;
 
-    for (r = 0; r < N/2; r++)
+    for (i = 0; i < LOG_N; i++)
     {
         index_print(idx, T, fp);
 
         fprintf(fp, "%*d", COL_WIDTH_R,     r);
-        fprintf(fp, "%*e", COL_WIDTH_FLOAT, C4[r]/num_meas);
+        fprintf(fp, "%*e", COL_WIDTH_FLOAT, C4[i]/num_meas);
         fprintf(fp, "\n");
+
+        r = 2*r + 1;
     }
 }
 
 void mod_corr_output(const mod_corr_t *self,
-                     const state_t *s,
-                     const index_t *idx,
-                     int num_meas,
-                     FILE *fp)
+                          const state_t *s,
+                          const index_t *idx,
+                          int num_meas,
+                          FILE *fp)
 {
     int i;
 
@@ -103,11 +97,5 @@ void mod_corr_output(const mod_corr_t *self,
     fflush(fp);
 }
 
-void mod_corr_cleanup(mod_corr_t *self)
-{
-    fftw_destroy_plan(self->dft);
-    fftw_destroy_plan(self->idct);
+void mod_corr_cleanup(mod_corr_t *self) {}
 
-    fftw_free(self->cr);
-    fftw_free(self->ck);
-}

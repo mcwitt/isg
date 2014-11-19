@@ -1,15 +1,20 @@
 srcdir = @srcdir@
+FULL_OUTPUT = @FULL_OUTPUT@
 VPATH = $(srcdir)
 
 CC = mpicc
-CFLAGS = -I. -I$(srcdir) -Wall -O3
+INC = -I. -I$(srcdir)
+CFLAGS = $(INC) -std=gnu99 -Wall -O3
 
+ifeq ($(FULL_OUTPUT), 1)
 LDLIBS = -lm -lgsl -lgslcblas -lfftw3
-
-MODULES = mod_meas.o mod_hist.o mod_corr.o mod_corr_logn.o mod_spinstate.o
+MODULES = mod_meas.o mod_hist.o mod_corr.o mod_corr_fft.o mod_spinstate.o
+else
+LDLIBS = -lm -lgsl -lgslcblas
+MODULES = mod_meas.o mod_hist.o mod_corr.o
+endif
 
 isg: output.o state.o exchange.o replica.o sample.o $(MODULES)
-
 
 clean:
 	$(RM) *.o

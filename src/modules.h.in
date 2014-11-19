@@ -5,25 +5,32 @@
 #include "output.h"
 #include "state.h"
 
-#include "mod_meas.h"
-#include "mod_hist.h"
-#include "mod_corr.h"
-#include "mod_corr_logn.h"
-#include "mod_spinstate.h"
-
 #define FULL_OUTPUT @FULL_OUTPUT@
 
 #if FULL_OUTPUT
+
+#include "mod_meas.h"
+#include "mod_hist.h"
+#include "mod_corr.h"
+#include "mod_corr_fft.h"
+#include "mod_spinstate.h"
+
 #define MODULES(_, ...) \
     _(meas, __VA_ARGS__) \
     _(hist, __VA_ARGS__) \
-    _(corr, __VA_ARGS__) \
+    _(corr_fft, __VA_ARGS__) \
     _(spinstate, __VA_ARGS__)
 #else
+
+#include "mod_meas.h"
+#include "mod_hist.h"
+#include "mod_corr.h"
+
 #define MODULES(_, ...) \
     _(meas, __VA_ARGS__) \
     _(hist, __VA_ARGS__) \
-    _(corr_logn, __VA_ARGS__)
+    _(corr, __VA_ARGS__)
+
 #endif
     
 #define MODULE_DECLARE(name, dummy) mod_##name##_t name;
