@@ -5,6 +5,7 @@
 #$ -j y
 
 set -x  # echo commands
+hostname
 
 # Copy files to /scratch
 scratch="$scratch_root/$$"
