@@ -2,6 +2,8 @@
 #include <assert.h>
 #include <string.h>
 
+#if DILUTE
+
 static void add_neighbor_dilute(int i, int j, double v,
                                 int *n, double *J4, int *z, double *h2m)
 {
@@ -12,6 +14,11 @@ static void add_neighbor_dilute(int i, int j, double v,
     ++z[i];
 }
 
+#define ADD_NEIGHBOR(i, j, v, n, J4, z, h2m) \
+    add_neighbor_dilute(i, j, v, n, J4, z, h2m)
+
+#else
+
 static void add_neighbor_complete(int i, int j, double v,
                                   double *J4, int *z, double *h2m)
 {
@@ -19,12 +26,9 @@ static void add_neighbor_complete(int i, int j, double v,
     h2m[i] += 2.*v;
 }
 
-#if DILUTE
-#define ADD_NEIGHBOR(i, j, v, n, J4, z, h2m) \
-    add_neighbor_dilute(i, j, v, n, J4, z, h2m)
-#else
 #define ADD_NEIGHBOR(i, j, v, n, J4, z, h2m) \
     add_neighbor_complete(i, j, v, J4, h2m)
+
 #endif
 
 void sample_init(sample_t *s)
