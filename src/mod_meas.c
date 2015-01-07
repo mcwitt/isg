@@ -2,7 +2,7 @@
 #include "state.h"
 #include <math.h>
 
-double spin_overlap(const int S1[], const int S2[])
+double spin_overlap(int const *S1, int const *S2)
 {
     int i, sum = 0;
 
@@ -12,23 +12,23 @@ double spin_overlap(const int S1[], const int S2[])
     return (double) sum/N;
 }
 
-double link_overlap(const int bond_i[],
-                    const int bond_j[],
-                    int num_bonds,
-                    const int S1[],
-                    const int S2[])
+double link_overlap(int const *n,
+                    int const *z,
+                    int const *S1,
+                    int const *S2)
 {
-    int k, sum = 0;
+    int i, k, sum = 0;
 
-    for (k = 0; k < num_bonds; k++)
+    for (i = 0; i < N; i++)
     {
-        int i, j;
-        i = bond_i[k];
-        j = bond_j[k];
-        sum += S1[i]*S1[j]*S2[i]*S2[j];
+        for (k = 0; k < z[i]; k++)
+        {
+            int j = *(n++);
+            sum += S1[i]*S1[j]*S2[i]*S2[j];
+        }
     }
 
-    return (double) sum/num_bonds;
+    return (double) 0.5*sum/NUM_BONDS;
 }
 
 static void print_header(FILE *fp)
@@ -79,10 +79,7 @@ void mod_meas_update(mod_meas_t *self, const state_t *s)
         p->rx += 0.5*(s->x1.swapped[i] + s->x2.swapped[i]);
 #endif
 
-        p->ql += link_overlap(s->sample.bond_i,
-                              s->sample.bond_j,
-                              s->sample.num_bonds,
-                              r1.S, r2.S);
+        p->ql += link_overlap(s->sample.n, s->sample.z, r1.S, r2.S);
     }
 }
 

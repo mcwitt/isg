@@ -10,7 +10,7 @@
 
 typedef struct
 {
-    const sample_t *sample;
+    const sample_data *sample;
     const double *beta;
     int b2r[NUM_REPLICAS];  /* beta index -> replica index */
     int r2b[NUM_REPLICAS];  /* replica index -> beta index */
@@ -22,7 +22,7 @@ typedef struct
 } exchange_t;
 
 void exchange_init(exchange_t *x,
-                   const sample_t *sample,
+                   const sample_data *sample,
                    const double beta[NUM_REPLICAS],
                    rng_t *rng);
 

@@ -115,8 +115,7 @@ int main(int argc, char *argv[])
     /* load sample */
     seed = strtol(seeds[rank], NULL, 16);
     OPEN_FILE("samp" SUFFIX, seed, buf, fp_in, "r");
-    sample_read(&s->sample, fp_in);
-    assert(s->sample.num_bonds == NUM_BONDS);
+    sample_init_read(&s->sample, fp_in);
     fclose(fp_in);
 
     /* open output files */

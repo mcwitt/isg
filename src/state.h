@@ -12,7 +12,7 @@
 typedef struct
 {
     exchange_t x1, x2;
-    sample_t sample;
+    sample_data sample;
     rng_t *rng;
     const params_t *params;
     int num_updates;

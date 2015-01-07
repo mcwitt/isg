@@ -2,7 +2,7 @@
 #include <math.h>
 
 void exchange_init(exchange_t *x,
-                   const sample_t *s,
+                   const sample_data *s,
                    const double beta[NUM_REPLICAS],
                    rng_t *rng)
 {
@@ -16,7 +16,7 @@ void exchange_init(exchange_t *x,
         x->b2r[i] = i;
         x->r2b[i] = i;
         x->swapped[i] = 0;
-        init_replica(s->n, s->J4, s->h2m, s->um,
+        init_replica(s->n, s->J4, s->z, s->h2m, s->um,
                      x->S[i], x->h2[i], &x->u[i], rng);
     }
 }
@@ -26,7 +26,7 @@ void exchange_update(exchange_t *x, rng_t *rng)
     int ir;
 
     for (ir = 0; ir < NUM_REPLICAS; ir++)
-        update_replica(x->sample->n, x->sample->J4,
+        update_replica(x->sample->n, x->sample->J4, x->sample->z,
                        x->beta[x->r2b[ir]],
                        x->S[ir], x->h2[ir], &x->u[ir], rng);
 

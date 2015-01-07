@@ -6,7 +6,7 @@
 
 typedef struct
 {
-    const sample_t *sample;
+    const sample_data *sample;
     const int *S;
     const double *h2;
     double u;
@@ -15,6 +15,7 @@ typedef struct
 
 void init_replica(const int * restrict n,
                   const double * restrict J4,
+                  const int * restrict z,
                   const double * restrict h2m,
                   double um,
                   int * restrict S,
@@ -24,6 +25,7 @@ void init_replica(const int * restrict n,
 
 void update_replica(const int * restrict n,
                     const double * restrict J4,
+                    const int * restrict z,
                     double beta,
                     int * restrict S,
                     double * restrict h2,
