@@ -86,7 +86,7 @@ if __name__=='__main__':
     parser.add_argument('-z', type=int, help='average coordination number for dilute bonds (0 is alias for undiluted model)')
     parser.add_argument('--sigma', type=float, default=0., help='interactions fall off with distance as r^(-2*sigma)')
     parser.add_argument('--ns', type=int, help='number of samples to generate')
-    parser.add_argument('--seed', type=int, help='random seed')
+    parser.add_argument('--seed', type=str, help='random seed')
     parser.add_argument('--fmt', type=str, help='format string for output filenames')
 
     args = parser.parse_args()
@@ -96,7 +96,7 @@ if __name__=='__main__':
             output.write('{} {} {}\n'.format(*bond))
 
     if args.seed is not None:
-        np.random.seed(args.seed)
+        np.random.seed(int(args.seed, 16))
 
     if args.z:
         func = bonds_dilute
