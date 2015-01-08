@@ -6,30 +6,30 @@
 
 typedef struct
 {
-    const sample_data *sample;
-    const int *S;
-    const double *h2;
+    sample_data const *sample;
+    int const *S;
+    double const *h2;
     double u;
 
-} replica_t;
+} replica;
 
-void init_replica(const int * restrict n,
-                  const double * restrict J4,
-                  const int * restrict z,
-                  const double * restrict h2m,
+void init_replica(int const * restrict n,
+                  double const * restrict J4,
+                  int const * restrict z,
+                  double const * restrict h2m,
                   double um,
                   int * restrict S,
                   double * restrict h2,
                   double * restrict u,
-                  rng_t *rng);
+                  rng *rand);
 
-void update_replica(const int * restrict n,
-                    const double * restrict J4,
-                    const int * restrict z,
+void update_replica(int const * restrict n,
+                    double const * restrict J4,
+                    int const * restrict z,
                     double beta,
                     int * restrict S,
                     double * restrict h2,
                     double * restrict u,
-                    rng_t *rng);
+                    rng *rand);
 
 #endif

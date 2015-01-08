@@ -25,5 +25,5 @@
 
 typedef uint64_t UINT;
 
-typedef struct { UINT f[NUM_REPLICAS][NUM_BINS]; } mod_hist_t;
+typedef struct { UINT f[NUM_REPLICAS][NUM_BINS]; } mod_hist;
 

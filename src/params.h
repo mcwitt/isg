@@ -5,6 +5,6 @@
 
 typedef struct {
     double beta[NUM_REPLICAS], T[NUM_REPLICAS];
-} params_t;
+} params;
 
 #endif

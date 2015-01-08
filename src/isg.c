@@ -18,13 +18,13 @@
     SAFE_OPEN(fp, buf, mode); \
 }
 
-void run_sim(state_t *s,
-             const params_t *p,
+void run_sim(state *s,
+             params const *p,
              unsigned int seed,
-             const output_files_t *of)
+             output_files const *of)
 {
     int b, i, num_updates;
-    modules_t mods;
+    modules mods;
 
     state_init(s, p, seed);
     state_update(s, pow(2, LOG_WARMUP_UPDATES));
@@ -32,7 +32,7 @@ void run_sim(state_t *s,
 
     for (b = LOG_WARMUP_UPDATES + 1; b <= LOG_NUM_UPDATES; b++)
     {
-        index_t idx = {b};
+        output_index idx = {b};
         num_updates = pow(2, b - LOG_UPDATES_PER_MEAS);
         MODULES(MODULE_RESET, mods);
 
@@ -55,9 +55,9 @@ int main(int argc, char *argv[])
     char buf[50], **seeds;
     int c, i, num_seeds, num_tasks, rank;
     unsigned int seed;
-    params_t p;
-    state_t *s;
-    output_files_t of;
+    params p;
+    state *s;
+    output_files of;
 
     num_seeds = argc - 1;
     seeds = argv + 1;
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    if ((s = malloc(sizeof(state_t))) == NULL)
+    if ((s = malloc(sizeof(state))) == NULL)
     {
         fprintf(stderr, "%s: error allocating memory\n", argv[0]);
         exit(EXIT_FAILURE);

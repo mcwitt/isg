@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static int spin_overlap(const int S1[], const int S2[], int w)
+static int spin_overlap(int const S1[], int const S2[], int w)
 {
     int i, sum = 0;
 
@@ -23,17 +23,17 @@ static void print_header(FILE *fp)
     fprintf(fp, "\n");
 }
 
-void mod_hist_init(mod_hist_t *self, FILE *fp)
+void mod_hist_init(mod_hist *self, FILE *fp)
 {
     print_header(fp);
 }
 
-void mod_hist_reset(mod_hist_t *self)
+void mod_hist_reset(mod_hist *self)
 {
     memset(self->f, 0, sizeof self->f);
 }
 
-static void accumulate(UINT *f, const int S1[], const int S2[])
+static void accumulate(UINT *f, int const S1[], int const S2[])
 {
     int i, w = 1;
 
@@ -68,13 +68,13 @@ static void accumulate(UINT *f, const int S1[], const int S2[])
 #undef NEXT_BLOCK
 }
 
-void mod_hist_update(mod_hist_t *self, const state_t *s)
+void mod_hist_update(mod_hist *self, state const *s)
 {
     int i;
 
     for (i = 0; i < NUM_REPLICAS; i++)
     {
-        replica_t r1, r2;
+        replica r1, r2;
 
         exchange_get_replica(&s->x1, i, &r1);
         exchange_get_replica(&s->x2, i, &r2);
@@ -83,7 +83,7 @@ void mod_hist_update(mod_hist_t *self, const state_t *s)
     }
 }
 
-static void print(const UINT *f, const index_t *idx, double T, FILE *fp)
+static void print(UINT const *f, output_index const *idx, double T, FILE *fp)
 {
     int i, w = 1;
 
@@ -113,19 +113,19 @@ static void print(const UINT *f, const index_t *idx, double T, FILE *fp)
 #undef PRINT_BLOCK
 }
 
-void mod_hist_output(const mod_hist_t *self,
-                     const state_t *s,
-                     const index_t *idx,
+void mod_hist_output(mod_hist const *self,
+                     state const *s,
+                     output_index const *idx,
                      int num_meas,
                      FILE *fp)
 {
     int i;
 
     for (i = 0; i < NUM_REPLICAS; i++)
-        print(self->f[i], idx, s->params->T[i], fp);
+        print(self->f[i], idx, s->pm->T[i], fp);
 
     fflush(fp);
 }
 
-void mod_hist_cleanup(mod_hist_t *self) {}
+void mod_hist_cleanup(mod_hist *self) {}
 

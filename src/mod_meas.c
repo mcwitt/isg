@@ -42,12 +42,12 @@ static void print_header(FILE *fp)
     fprintf(fp, "\n");
 }
 
-void mod_meas_init(mod_meas_t *self, FILE *fp)
+void mod_meas_init(mod_meas *self, FILE *fp)
 {
     print_header(fp);
 }
 
-void mod_meas_reset(mod_meas_t *self)
+void mod_meas_reset(mod_meas *self)
 {
     int i;
 
@@ -56,15 +56,15 @@ void mod_meas_reset(mod_meas_t *self)
 #undef X
 }
 
-void mod_meas_update(mod_meas_t *self, const state_t *s)
+void mod_meas_update(mod_meas *self, state const *s)
 {
     int i;
 
     for (i = 0; i < NUM_REPLICAS; i++)
     {
         double q;
-        replica_t r1, r2;
-        meas_data_t *p = self->data + i;
+        replica r1, r2;
+        meas_data *p = self->data + i;
 
         exchange_get_replica(&s->x1, i, &r1);
         exchange_get_replica(&s->x2, i, &r2);
@@ -83,8 +83,8 @@ void mod_meas_update(mod_meas_t *self, const state_t *s)
     }
 }
 
-static void print(const meas_data_t *data,
-                  const index_t *idx,
+static void print(meas_data const *data,
+                  output_index const *idx,
                   double T,
                   int num_meas,
                   FILE *fp)
@@ -99,19 +99,19 @@ static void print(const meas_data_t *data,
     fprintf(fp, "\n");
 } 
 
-void mod_meas_output(const mod_meas_t *self,
-                     const state_t *s,
-                     const index_t *idx,
+void mod_meas_output(mod_meas const *self,
+                     state const *s,
+                     output_index const *idx,
                      int num_meas,
                      FILE *fp)
 {
     int i;
 
     for (i = 0; i < NUM_REPLICAS; i++)
-        print(self->data + i, idx, s->params->T[i], num_meas, fp);
+        print(self->data + i, idx, s->pm->T[i], num_meas, fp);
 
     fflush(fp);
 }
 
-void mod_meas_cleanup(mod_meas_t *self) {}
+void mod_meas_cleanup(mod_meas *self) {}
 

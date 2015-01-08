@@ -18,8 +18,8 @@
 #endif
 
 #define X(type, name, fmt, width) type name;
-typedef struct { MEAS_FIELDS } meas_data_t;
+typedef struct { MEAS_FIELDS } meas_data;
 #undef X
 
-typedef struct { meas_data_t data[NUM_REPLICAS]; } mod_meas_t;
+typedef struct { meas_data data[NUM_REPLICAS]; } mod_meas;
 

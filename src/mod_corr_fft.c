@@ -12,7 +12,7 @@ static void print_header(FILE *fp)
     fprintf(fp, "\n");
 }
 
-void mod_corr_fft_init(mod_corr_fft_t *self, FILE *fp)
+void mod_corr_fft_init(mod_corr_fft *self, FILE *fp)
 {
     self->cr = (double*) fftw_malloc(sizeof(double) * N);
     self->ck = (complex double*) fftw_malloc(sizeof(complex double) * N);
@@ -25,13 +25,13 @@ void mod_corr_fft_init(mod_corr_fft_t *self, FILE *fp)
     print_header(fp);
 }
 
-void mod_corr_fft_reset(mod_corr_fft_t *self)
+void mod_corr_fft_reset(mod_corr_fft *self)
 {
     memset(self->C4, 0., sizeof self->C4);
 }
 
-static void accumulate(const int S1[],
-                       const int S2[],
+static void accumulate(int const S1[],
+                       int const S2[],
                        double C4[],
                        double cr[],
                        complex double ck[],
@@ -54,13 +54,13 @@ static void accumulate(const int S1[],
     for (i = 0; i < N/2; i++) C4[i] += cr[i];
 }
 
-void mod_corr_fft_update(mod_corr_fft_t *self, const state_t *s)
+void mod_corr_fft_update(mod_corr_fft *self, state const *s)
 {
     int i;
 
     for (i = 0; i < NUM_REPLICAS; i++)
     {
-        replica_t r1, r2;
+        replica r1, r2;
 
         exchange_get_replica(&s->x1, i, &r1);
         exchange_get_replica(&s->x2, i, &r2);
@@ -71,8 +71,8 @@ void mod_corr_fft_update(mod_corr_fft_t *self, const state_t *s)
     }
 }
 
-static void print(const double C4[],
-                  const index_t *idx,
+static void print(double const C4[],
+                  output_index const *idx,
                   int num_meas,
                   double T,
                   FILE *fp)
@@ -89,21 +89,21 @@ static void print(const double C4[],
     }
 }
 
-void mod_corr_fft_output(const mod_corr_fft_t *self,
-                     const state_t *s,
-                     const index_t *idx,
-                     int num_meas,
-                     FILE *fp)
+void mod_corr_fft_output(mod_corr_fft const *self,
+                         state const *s,
+                         output_index const *idx,
+                         int num_meas,
+                         FILE *fp)
 {
     int i;
 
     for (i = 0; i < NUM_REPLICAS; i++)
-        print(self->C4[i], idx, num_meas, s->params->T[i], fp);
+        print(self->C4[i], idx, num_meas, s->pm->T[i], fp);
 
     fflush(fp);
 }
 
-void mod_corr_fft_cleanup(mod_corr_fft_t *self)
+void mod_corr_fft_cleanup(mod_corr_fft *self)
 {
     fftw_destroy_plan(self->dft);
     fftw_destroy_plan(self->idct);

@@ -2,7 +2,7 @@
 #include "state.h"
 #include "output.h"
 
-void mod_spinstate_init(mod_spinstate_t *self, FILE *fp)
+void mod_spinstate_init(mod_spinstate *self, FILE *fp)
 {
     print_index_header(fp);
     fprintf(fp, "%*s", 3, "c");
@@ -10,10 +10,10 @@ void mod_spinstate_init(mod_spinstate_t *self, FILE *fp)
     fprintf(fp, "\n");
 }
 
-void mod_spinstate_reset(mod_spinstate_t *self) {}
-void mod_spinstate_update(mod_spinstate_t *self, const state_t *s) {}
+void mod_spinstate_reset(mod_spinstate *self) {}
+void mod_spinstate_update(mod_spinstate *self, state_t const *s) {}
 
-static void print_spins(const int S[], FILE *fp)
+static void print_spins(int const S[], FILE *fp)
 {
     int i;
 
@@ -28,9 +28,9 @@ static void print_spins(const int S[], FILE *fp)
     fprintf(fp, "\n");
 }
 
-void mod_spinstate_output(const mod_spinstate_t *self,
-                          const state_t *s,
-                          const index_t *idx,
+void mod_spinstate_output(mod_spinstate const *self,
+                          state_t const *s,
+                          index_t const *idx,
                           int num_updates,
                           FILE *fp)
 {
@@ -55,5 +55,5 @@ void mod_spinstate_output(const mod_spinstate_t *self,
     fflush(fp);
 }
 
-void mod_spinstate_cleanup(mod_spinstate_t *self) {}
+void mod_spinstate_cleanup(mod_spinstate *self) {}
 

@@ -11,8 +11,8 @@
 #if RNG == RNG_DSFMT
 
 #include "dSFMT.h"
-typedef dsfmt_t rng_t;
-#define RNG_ALLOC()         malloc(sizeof(rng_t))
+typedef dsfmt_t rng;
+#define RNG_ALLOC()         malloc(sizeof(rng))
 #define RNG_SEED(r, seed)   dsfmt_init_gen_rand(r, seed)
 #define RNG_UNIFORM(r)      dsfmt_genrand_close_open(r)
 #define RNG_FREE(r)         free(r)
@@ -22,7 +22,7 @@ typedef dsfmt_t rng_t;
 /* use an RNG from the GSL... */
 
 #include "gsl_rng.h"
-typedef gsl_rng rng_t;
+typedef gsl_rng rng;
 #if   RNG == RNG_MT19937
 #define RNG_TYPE gsl_rng_mt19937
 #elif RNG == RNG_TAUS2

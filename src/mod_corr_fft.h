@@ -14,4 +14,4 @@ typedef struct
     complex double *ck;
     fftw_plan dft, idct;
 
-} mod_corr_fft_t;
+} mod_corr_fft;

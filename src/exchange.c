@@ -1,10 +1,10 @@
 #include "exchange.h"
 #include <math.h>
 
-void exchange_init(exchange_t *x,
-                   const sample_data *s,
-                   const double beta[NUM_REPLICAS],
-                   rng_t *rng)
+void exchange_init(exchange *x,
+                   sample_data const *s,
+                   double const beta[NUM_REPLICAS],
+                   rng *rand)
 {
     int i;
 
@@ -17,25 +17,25 @@ void exchange_init(exchange_t *x,
         x->r2b[i] = i;
         x->swapped[i] = 0;
         init_replica(s->n, s->J4, s->z, s->h2m, s->um,
-                     x->S[i], x->h2[i], &x->u[i], rng);
+                     x->S[i], x->h2[i], &x->u[i], rand);
     }
 }
 
-void exchange_update(exchange_t *x, rng_t *rng)
+void exchange_update(exchange *x, rng *rand)
 {
     int ir;
 
     for (ir = 0; ir < NUM_REPLICAS; ir++)
         update_replica(x->sample->n, x->sample->J4, x->sample->z,
                        x->beta[x->r2b[ir]],
-                       x->S[ir], x->h2[ir], &x->u[ir], rng);
+                       x->S[ir], x->h2[ir], &x->u[ir], rand);
 
 #if REPLICA_EXCHANGE
-    update_exchange(x->beta, x->u, x->b2r, x->r2b, x->swapped, rng);
+    update_exchange(x->beta, x->u, x->b2r, x->r2b, x->swapped, rand);
 #endif
 }
 
-void exchange_get_replica(const exchange_t *x, int ib, replica_t *r)
+void exchange_get_replica(exchange const *x, int ib, replica *r)
 {
     int ir = x->b2r[ib];
 
@@ -45,12 +45,12 @@ void exchange_get_replica(const exchange_t *x, int ib, replica_t *r)
     r->u  = x->u[ir];
 }
 
-void update_exchange(const double beta[NUM_REPLICAS],
-                     const double u[NUM_REPLICAS],
+void update_exchange(double const beta[NUM_REPLICAS],
+                     double const u[NUM_REPLICAS],
                      int b2r[NUM_REPLICAS],
                      int r2b[NUM_REPLICAS],
                      int swapped[NUM_REPLICAS],
-                     rng_t *rng)
+                     rng *rand)
 {
     int ib2;
 
@@ -65,7 +65,7 @@ void update_exchange(const double beta[NUM_REPLICAS],
         db = beta[ib2] - beta[ib1]; /* negative */
         du = u[ir2] - u[ir1];
 
-        if (du < 0. || (r = RNG_UNIFORM(rng), r < exp(db*du)))
+        if (du < 0. || (r = RNG_UNIFORM(rand), r < exp(db*du)))
         {
 #define SET_TEMP(ir, ib) { b2r[ib] = ir; r2b[ir] = ib; }
             SET_TEMP(ir1, ib2); /* link replica 1 to temperature 2 */

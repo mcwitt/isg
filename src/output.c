@@ -1,7 +1,7 @@
 #include "output.h"
 #include <stddef.h>
 
-void index_print(const index_t *x, double T, FILE *fp)
+void index_print(output_index const *x, double T, FILE *fp)
 {
 #define X(type, name, fmt, width) fprintf(fp, fmt, width, x->name);
     INDEX_FIELDS
