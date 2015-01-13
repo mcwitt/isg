@@ -59,8 +59,9 @@ then setp PE_OPT "-pe \"smp\" $num_cores"
 else setp PE_OPT ""
 fi
 
-echo 'qsub -N $jobname -V $PE_OPT -t 1-$num_jobs $jobscript \
-     -l h_rss=$h_rss,h_fsize=$h_fsize,h_cpu=$h_cpu,hw=$hw' \
+echo 'qsub -N $jobname -V $PE_OPT -t 1-$num_jobs \
+     -l h_rss=$h_rss,h_fsize=$h_fsize,h_cpu=$h_cpu,hw=$hw \
+     $jobscript'
      >> $tmp
 
 output="$jobname-submit.sh"
