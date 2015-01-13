@@ -4,6 +4,10 @@
 #define LOG_UPDATES_PER_MEAS @LOG_UPDATES_PER_MEAS@
 #define UPDATES_PER_MEAS @UPDATES_PER_MEAS@
 
+#define GENERATE_SAMPLE @GENERATE_SAMPLE@   /* if true, generate samples on the fly,
+                                               otherwise read from text files */
+#define SIGMA @SIGMA@
+
 #define TEMP_FILE "temps.txt"
 #define SUFFIX "_%06x.txt"
 

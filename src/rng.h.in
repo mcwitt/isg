@@ -22,6 +22,12 @@ typedef dsfmt_t rng;
 /* use an RNG from the GSL... */
 
 #include "gsl_rng.h"
+
+/* XXX Hack because gsl_randist uses `N` as variable... */
+#undef N
+#include "gsl_randist.h"
+#define N @N@
+
 typedef gsl_rng rng;
 #if   RNG == RNG_MT19937
 #define RNG_TYPE gsl_rng_mt19937
@@ -34,6 +40,7 @@ typedef gsl_rng rng;
 #define RNG_ALLOC()         gsl_rng_alloc(RNG_TYPE)
 #define RNG_SEED(r, seed)   gsl_rng_set(r, seed)
 #define RNG_UNIFORM(r)      gsl_rng_uniform(r)
+#define RNG_GAUSS(r, sigma) gsl_ran_gaussian(r, sigma)
 #define RNG_FREE(r)         gsl_rng_free(r)
 
 #endif  /* GSL RNGs*/

@@ -29,14 +29,8 @@ askp jobscript "$root/job.sh" "job script"
 askp commit $(cd $root; git rev-parse HEAD) "commit"
 
 askp LOG_N 7 "log_2 N"
-askp sigma "0.600" "sigma"
-askp DILUTE 1 "dilute model"
-
-if [ "$DILUTE" -eq 1 ]; then
-    askp Z 6 "average z"
-    askp Z_MAX 24 "maximum z"
-else setp Z 0
-fi
+askp SIGMA "0.600" "sigma"
+askp Z 6 "average z"
 
 askp tempset "./temps.txt" "temperature set"
 askp LOG_WARMUP_UPDATES 3 "number of warmup decades"
@@ -44,7 +38,10 @@ askp LOG_NUM_UPDATES 16 "number of decades"
 askp log_min_meas_per_bin 10 "log minimum measurements per histogram bin"
 askp REPLICA_EXCHANGE 0 "enable replica exchange"
 askp FULL_OUTPUT 0 "full output [O(N) space]"
-askp KEEP_SAMPLES 0 "keep samples"
+askp GENERATE_SAMPLE 0 "generate samples at run-time?"
+if [ $GENERATE_SAMPLE -eq 0 ]; then
+    askp KEEP_SAMPLES 0 "keep samples?"
+fi
 askp num_cores 1 "number of cores per job"
 askp num_jobs 100 "number of jobs"
 askp h_rss "4G" "reserve memory"

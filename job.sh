@@ -23,15 +23,18 @@ git checkout $commit
 NUM_REPLICAS=$num_temps ./setup.sh
 make
 
-# Generate samples
-seeds=$(python bonds.py $((2**LOG_N)) -z $Z --sigma $sigma --ns $num_cores)
+if [ "$GENERATE_SAMPLE" -eq 0 ]; then
+    seeds=$(python bonds.py $((2**LOG_N)) -z $Z --sigma $sigma --ns $num_cores)
+else
+    seeds=$(python seeds.py $num_cores)
+fi
 
 # Run
 # Don't read or write to /home from here
 time mpirun ./isg $seeds
 
 # Move output to home directory, clean up
-[ "$KEEP_SAMPLES" -eq 1 ] || rm samp_*.txt
+[ "$KEEP_SAMPLES" -eq 1 ] || rm -f samp_*.txt
 bzip2 -9 *.txt
 mv *.bz2 $output_dir
 mv *.h $output_dir

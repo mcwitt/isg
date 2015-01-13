@@ -20,6 +20,7 @@ typedef struct
     int offset[N];
     double h2m[N];
     double um;
+
 } sample_data;
 
 void sample_init(sample_data *s,

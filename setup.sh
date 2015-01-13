@@ -17,6 +17,8 @@ function setp {
 getp srcdir $srcdir
 
 getp LOG_N 7
+getp GENERATE_SAMPLE 0
+getp SIGMA "0.6"
 getp DILUTE 1
 getp Z 6
 getp Z_MAX 24

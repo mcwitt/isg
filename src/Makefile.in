@@ -14,7 +14,9 @@ LDLIBS = -lm -lgsl -lgslcblas
 MODULES = mod_meas.o mod_hist.o mod_corr.o
 endif
 
-isg: output.o state.o exchange.o replica.o sample.o $(MODULES)
+isg: bonds.o bond_dist.o output.o state.o exchange.o replica.o sample.o $(MODULES)
+
+genbonds: bond_dist.o bonds.o
 
 clean:
 	$(RM) *.o

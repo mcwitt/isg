@@ -1,9 +1,9 @@
+#ifndef EXCHANGE_H
+#define EXCHANGE_H
+
 #include "sample.h"
 #include "replica.h"
 #include "rng.h"
-
-#ifndef EXCHANGE_H
-#define EXCHANGE_H
 
 #define NUM_REPLICAS        @NUM_REPLICAS@
 #define REPLICA_EXCHANGE    @REPLICA_EXCHANGE@

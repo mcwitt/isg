@@ -22,7 +22,7 @@ void init_sample(int const *bond_site, double const *bond_value,
     int i, b;
 
     /* 1st pass: calculate vertex degrees and offsets */
-    memset(z, 0, N*sizeof(int));
+    memset(z, 0, N * sizeof(int));
 
     for (i = 0; i < NZ; i++)
         z[bond_site[i]]++;
@@ -33,8 +33,8 @@ void init_sample(int const *bond_site, double const *bond_value,
         offset[i] = offset[i-1] + z[i-1];
 
     /* 2nd pass: fill in values */
-    memset(z, 0, N*sizeof(int));
-    memset(h2m, 0., N*sizeof(double));
+    memset(z, 0, N * sizeof(int));
+    memset(h2m, 0., N * sizeof(double));
     *um = 0.;
 
     for (i = 0; i < NUM_BONDS; i++)
@@ -63,8 +63,8 @@ void sample_init_read(sample_data *s, FILE *fp)
     int *bond_site, i;
     double *bond_value;
 
-    bond_site  = malloc(NZ*sizeof(int));
-    bond_value = malloc(NUM_BONDS*sizeof(double));
+    bond_site  = malloc(NZ * sizeof(int));
+    bond_value = malloc(NUM_BONDS * sizeof(double));
 
     for (i = 0; i < NUM_BONDS; i++)
     {

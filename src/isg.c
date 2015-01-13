@@ -1,5 +1,8 @@
 #include "isg.h"
+#include "bonds.h"
+#include "bond_dist.h"
 #include "modules.h"
+#include "rng.h"
 #include <assert.h>
 #include <ctype.h>
 #include <math.h>
@@ -112,11 +115,39 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    /* load sample */
     seed = strtol(seeds[rank], NULL, 16);
+
+#if GENERATE_SAMPLE
+    /* generate a new sample */
+    {
+        bonds *b = malloc(sizeof(bonds));
+        rng *rand = RNG_ALLOC();
+        int *bond_site;
+        double *bond_value;
+
+        bonds_init(b);
+        RNG_SEED(rand, seed);
+        bond_dist_dilute(b, SIGMA, rand);
+        RNG_FREE(rand);
+
+        bond_site =  malloc(2*NUM_BONDS*sizeof(int));
+        bond_value = malloc(  NUM_BONDS*sizeof(double));
+
+        bonds_to_list(b, bond_site, bond_value);
+        bonds_free(b);
+        free(b);
+
+        sample_init(&s->sample, bond_site, bond_value);
+
+        free(bond_site);
+        free(bond_value);
+    }
+#else
+    /* load sample from text file */
     OPEN_FILE("samp" SUFFIX, seed, buf, fp_in, "r");
     sample_init_read(&s->sample, fp_in);
     fclose(fp_in);
+#endif
 
     /* open output files */
 #define OPEN_OUTPUT(name, dummy) \
