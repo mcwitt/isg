@@ -37,7 +37,6 @@ log_min_meas_per_bin=${log_min_meas_per_bin:-7}
 # compute derived constants
 
 setp N $((2**LOG_N))
-setp NUM_UPDATES $((2**LOG_NUM_UPDATES))
 setp UPDATES_PER_MEAS $((2**LOG_UPDATES_PER_MEAS))
 
 log_num_meas=$((LOG_NUM_UPDATES - LOG_UPDATES_PER_MEAS))
