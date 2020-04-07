@@ -79,5 +79,5 @@ There are two methods for sample generation.
 
 See the help message for `bonds.py` for more usage information.
 If using `GENERATE_SAMPLES=1`, the range parameter is controlled by setting the
-`SIGMA` parameter before calling `setup.h`.
+`SIGMA` parameter before calling `setup.sh`.
 
